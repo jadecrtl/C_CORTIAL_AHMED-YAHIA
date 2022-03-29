@@ -8,21 +8,29 @@ CFLAGS=-Wall -g -pedantic
 # $? La liste des dépendances plus récentes que la cible
 # $* Le nom du fichier sans suffixe
 
-#cible: dependances
+#Makefile permet également de créer des règles génériques (par exemple construire un .o à partir d'un .c) qui se verront appelées par défaut.
+#Une telle règle se présente sous la forme suivante : 
+#%.o: %.c
 #	commandes
 
-all: arithmetique/src/operation
+#cible: dependance
+#	commandes
 
-arithmetique/src/operation: operation.o testOperation.o
-	$(COMPILATEUR) -o $@ $^
+all : unbounded_int test_unbounded
 
-testOperation.o: operation.h
+test_unbounded.o: unbounded_int.h
 
-%.o: %.c
-	$(COMPILATEUR) -o $@ -c $< $(CFLAGS)
+unbounded_int: unbounded_int.c
+	$(COMPILATEUR) $(CFLAGS) $< -o $@
 
-clean:
-	rm -rf *.o
-	rm -rf main
+test_unbounded: test_unbounded.c
+	$(COMPILATEUR) $(CFLAGS) $< -o $@
 
-integral: clean all
+clean :
+	rm -f *.o
+	rm -f test_unbounded
+	rm -f unbounded_int
+
+go :
+	./unbounded_int
+	./test_unbounded
