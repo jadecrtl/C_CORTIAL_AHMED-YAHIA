@@ -1,3 +1,6 @@
+#ifndef UNBOUNDED_INT_H
+#define UNBOUNDED_INT_H
+
 typedef struct chiffre{
     struct chiffre *suivant;
     char c;
@@ -39,3 +42,4 @@ unbounded_int unbounded_int_produit( unbounded_int a, unbounded_int b);
 
 
 
+#endif
