@@ -9,20 +9,27 @@
 
 /*Prend une chaîne de caractère représentant un entier et renvoie le unbounded_int correspondant à cet entier. Si la chaîne de
 caractère ne représente pas un entier, on renvoie un unbounded_int avec l'attribut signe = '*'. */
+
+static unbounded_int *creer_unbounded_int();
+
 unbounded_int string2unbounded_int(const char *e) {
-    unbounded_int* unbo = malloc(sizeof(unbo));
-    assert(unbo != NULL);
-    if (e == '-') {
+    unbounded_int *unbo = creer_unbounded_int();
+    if (*e == '-') {
         unbo->signe = '-';
-        e++;
+        *e++;
     }
     else {
         unbo->signe = '+';
     }
-    chiffre* nouveau = malloc(sizeof(chiffre));
-    assert(nouveau != NULL);
-    while(e != '\0') {
-        
-    }
     return *unbo;
+}
+
+static unbounded_int *creer_unbounded_int() {
+    unbounded_int* unbo = malloc(sizeof(unbounded_int));
+    if(unbo == NULL) {
+        perror("\ncreer_unbounded_int : La création de l'unbounded_int a échouée\n");
+        free(unbo);
+        exit(1);
+    }
+    return unbo;
 }
