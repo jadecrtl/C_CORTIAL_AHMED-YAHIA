@@ -12,6 +12,8 @@ caractère ne représente pas un entier, on renvoie un unbounded_int avec l'attr
 
 static unbounded_int *creer_unbounded_int();
 static chiffre *creer_chiffre();
+static void ajouter_chiffre_a_la_fin(const char e, unbounded_int *unbo);
+
 //static char *long2char(long long b);
 
 unbounded_int string2unbounded_int(const char *e) {
@@ -59,7 +61,7 @@ unbounded_int string2unbounded_int(const char *e) {
     }
     chiffre *chi = creer_chiffre();
     while (*e != '\0') {
-        //ajouter_chiffre_a_la_fin(e, unbo);
+        ajouter_chiffre_a_la_fin(*e, unbo);
         unbo->len++;
         e++;
     }
@@ -73,6 +75,7 @@ static unbounded_int *creer_unbounded_int() {
         perror("\ncreer_unbounded_int : La création de l'unbounded_int a échouée\n");
         exit(1);
     }
+    unbo->len = 0;
     return unbo;
 }
 
@@ -84,6 +87,32 @@ static chiffre *creer_chiffre() {
     }
     return chi;
 }
+
+static void ajouter_chiffre_a_la_fin(const char e, unbounded_int *unbo) {
+    if (!isdigit(e)) {
+        unbo->signe = '*';
+        printf("\najouter_chiffre_a_la_fin : Cette chaîne contient un non numérique.\n");
+    }
+    chiffre *chi = creer_chiffre();
+    chi->c = e;
+    if (unbo->premier == NULL && unbo->dernier == NULL) {
+        //premier élément de la liste
+        chi->precedent = NULL;
+        chi->suivant = NULL;
+        unbo->premier = chi;
+        unbo->dernier = chi;
+    }
+    else {
+        //sinon insertion en dernière position
+        chi->precedent = unbo->dernier;
+        chi->suivant = NULL;
+        unbo->dernier->suivant = chi;
+        unbo->dernier = chi;
+    }
+}
+
+
+
 /*
 static char *long2char(long long b){
     char *c = malloc(sizeof(char));
