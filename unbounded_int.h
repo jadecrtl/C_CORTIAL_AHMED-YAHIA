@@ -1,5 +1,4 @@
-#ifndef UNBOUNDED_INT_H
-#define UNBOUNDED_INT_H
+#include <stdlib.h>
 
 typedef struct chiffre{
     struct chiffre *suivant;
@@ -39,7 +38,3 @@ unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b);
 
 /*Renvoie le produit de a et b en unbounded_int.*/
 unbounded_int unbounded_int_produit( unbounded_int a, unbounded_int b);
-
-void affiche(unbounded_int a);
-
-#endif

@@ -1,6 +1,9 @@
 #url du lien web pour faire des makefile : https://gl.developpez.com/tutoriel/outil/makefile/
 COMPILATEUR=gcc
 CFLAGS=-Wall -g -pedantic
+EXEC=test_unbounded
+SRC=unbounded_int.c test_unbounded.c
+OBJ=$(SRC:.c=.o)
 
 # $@ Le nom de la cible
 # $< Le nom de la première dépendance
@@ -16,21 +19,14 @@ CFLAGS=-Wall -g -pedantic
 #cible: dependance
 #	commandes
 
-all : unbounded_int test_unbounded
+all : $(EXEC)
 
-test_unbounded.o: unbounded_int.h
+test_unbounded: $(OBJ)
+	$(COMPILATEUR) -o $@ $^
 
-unbounded_int: unbounded_int.c
-	$(COMPILATEUR) $(CFLAGS) $< -o $@
-
-test_unbounded: test_unbounded.c
-	$(COMPILATEUR) $(CFLAGS) $< -o $@
+%.o: %.c
+	$(COMPILATEUR) $(CFLAGS) -o $@ -c $< 
 
 clean :
 	rm -f *.o
 	rm -f test_unbounded
-	rm -f unbounded_int
-
-go :
-	./unbounded_int
-	./test_unbounded
