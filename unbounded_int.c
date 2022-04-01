@@ -13,6 +13,7 @@ caractère ne représente pas un entier, on renvoie un unbounded_int avec l'attr
 static unbounded_int *creer_unbounded_int();
 static chiffre *creer_chiffre();
 static void ajouter_chiffre_a_la_fin(const char e, unbounded_int *unbo);
+static void ajouter_chiffre_au_debut(const char e, unbounded_int *unbo);
 
 //static char *long2char(long long b);
 
@@ -61,7 +62,7 @@ unbounded_int string2unbounded_int(const char *e) {
     }
     chiffre *chi = creer_chiffre();
     while (*e != '\0') {
-        ajouter_chiffre_a_la_fin(*e, unbo);
+        ajouter_chiffre_au_debut(*e, unbo);
         unbo->len++;
         e++;
     }
@@ -111,15 +112,99 @@ static void ajouter_chiffre_a_la_fin(const char e, unbounded_int *unbo) {
     }
 }
 
+static void ajouter_chiffre_au_debut(const char e, unbounded_int *unbo) {
+    if (!isdigit(e)) {
+        unbo->signe = '*';
+        printf("\najouter_chiffre_a_la_fin : Cette chaîne contient un non numérique.\n");
+    }
+    chiffre *chi = creer_chiffre();
+    chi->c = e;
+    if (unbo->premier == NULL && unbo->dernier == NULL) {
+        //premier élément de la liste
+        chi->precedent = NULL;
+        chi->suivant = NULL;
+        unbo->premier = chi;
+        unbo->dernier = chi;
+    }
+    else {
+        //sinon insertion en première position
+        chi->precedent = NULL;
+        chi->suivant = unbo->premier;
+        unbo->premier->precedent = chi;
+        unbo->premier = chi;
+    }
+}
+
+/*Prend un long long et renvoie le unbounded_int correspondant.*/
+unbounded_int ll2unbounded_int(long long i) {
+    int j = i;
+    unbounded_int *unbo = creer_unbounded_int();
+    if (i < 0) {
+        unbo->signe = '-';
+        j = -j;
+    }
+    else {
+        unbo->signe = '+';
+    }
+    while (j > 0) {
+        char tmp = (char) ((j % 10) + '0');
+        ajouter_chiffre_au_debut(tmp, unbo);
+        j = j / 10;
+        unbo->len++;
+    }
+    return *unbo;
+}
+
+/*Prend un unbounded_int et renvoie la chaine de caractère correspondante (contraire de string2unbounded_int()).*/
+char *unbounded_int2string(unbounded_int i) {
+    char *e = malloc(sizeof(char));
+    if(e == NULL) {
+        perror("\ncreer_chiffre : La création du chiffre a échouée\n");
+        exit(1);
+    }
+    int j = 0;
+    while(j < i.len && i.premier != NULL) {
+        e[j] = i.premier->c;
+        j++;
+        i.premier = i.premier->suivant;
+    }
+    return e;
+}
+
+
+/*Retourne une des valeurs −1, 0, 1 si, respectivement, a < b, a == b, a > b (ou a, b sont
+les entiers représentés par a et b).*/
+int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
+    if (a.signe == '*' || b.signe == '*') {
+        return 99;
+    }
+    if (a.signe == '-' && b.signe == '+') {
+        return -1;
+    }
+    if (a.signe == '+' && b.signe == '-') {
+        return 1;
+    }
+    if (a.signe == '+' && b.signe == '+') {
+        if (a.len > b.len) {
+            return 1;
+        }
+        if (a.len < b.len) {
+            return -1;
+        }
+    }
+    if (a.signe == '-' && b.signe == '-') {
+        if (a.len > b.len) {
+            return -1;
+        }
+        if (a.len < b.len) {
+            return 1;
+        }
+    }
+}
+
 
 
 /*
-static char *long2char(long long b){
-    char *c = malloc(sizeof(char));
-    assert(c != NULL);
-    return c;
-}
-
 int unbounded_int_cmp_ll(unbounded_int a, long long b){
     size_t length = sizeof(b)/sizeof(long long);
     if((a.signe == '-' && b >= 0) || (a.len < length)){
