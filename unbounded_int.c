@@ -60,13 +60,11 @@ unbounded_int string2unbounded_int(const char *e) {
     else {
         unbo->signe = '+';
     }
-    chiffre *chi = creer_chiffre();
     while (*e != '\0') {
-        ajouter_chiffre_au_debut(*e, unbo);
+        ajouter_chiffre_a_la_fin(*e, unbo);
         unbo->len++;
         e++;
     }
-    free(chi);
     return *unbo;
 }
 
@@ -128,10 +126,10 @@ static void ajouter_chiffre_au_debut(const char e, unbounded_int *unbo) {
     }
     else {
         //sinon insertion en première position
-        chi->precedent = NULL;
-        chi->suivant = unbo->premier;
         unbo->premier->precedent = chi;
+        chi->suivant = unbo->premier;
         unbo->premier = chi;
+        chi->precedent = NULL;
     }
 }
 
@@ -163,7 +161,7 @@ char *unbounded_int2string(unbounded_int i) {
         exit(1);
     }
     int j = 0;
-    while(j < i.len && i.premier != NULL) {
+    while(i.premier != NULL) {
         e[j] = i.premier->c;
         j++;
         i.premier = i.premier->suivant;

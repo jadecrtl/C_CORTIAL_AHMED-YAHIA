@@ -15,7 +15,7 @@ int main(void) {
     printf("\nTest string2unbounded_int : \n\n");
     test_string2unbounded_int("1", '+', 1);
     test_string2unbounded_int("-1", '-', 1);
-    test_string2unbounded_int("1234", '+', 4);
+    test_string2unbounded_int("1234", '+', 4); // ???
     test_string2unbounded_int("-1234", '-', 4);
     test_string2unbounded_int("-a1234", '*', 5);
     test_string2unbounded_int("-12a34", '*', 5);
@@ -25,8 +25,10 @@ int main(void) {
     test_ll2unbounded_int(123456789);
     test_ll2unbounded_int(-123456789);
 
-    printf("\nTest ll2unbounded_int : \n\n");
-    test_unbounded_int2string(ll2unbounded_int(123456789));
+    printf("\nTest unbounded_int2string : \n\n");
+    unbounded_int* u = malloc(sizeof(unbounded_int)); // il faut utiliser un pointeur d'unbounded_int, sinon ça double le unbounded_int
+    *u = ll2unbounded_int(123456789);
+    test_unbounded_int2string(*u);
     printf("\n\n******* TEST OK ********\n\n");
     return 0;
 }
