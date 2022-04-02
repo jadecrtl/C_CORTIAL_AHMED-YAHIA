@@ -7,66 +7,11 @@
 
 #include "unbounded_int.h"
 
-/*Prend une chaîne de caractère représentant un entier et renvoie le unbounded_int correspondant à cet entier. Si la chaîne de
-caractère ne représente pas un entier, on renvoie un unbounded_int avec l'attribut signe = '*'. */
 
 static unbounded_int *creer_unbounded_int();
 static chiffre *creer_chiffre();
 static void ajouter_chiffre_a_la_fin(const char e, unbounded_int *unbo);
 static void ajouter_chiffre_au_debut(const char e, unbounded_int *unbo);
-
-//static char *long2char(long long b);
-
-unbounded_int string2unbounded_int(const char *e) {
-    /*ALGORITHME
-    ABCDEFGHIJ
-    1234478909
-
-    creer 1(nouveau) > A (precedent = NULL, suivant = NULL)
-    modifier UNBI premier = nouveau, dernier = nouveau
-    
-    UNBI premier = (A), dernier = (A)
-    A precedent = NULL
-    A suivant = NULL
-
-    creer 2(nouveau) > B (precedent = dernier(A), suivant = NULL)
-    modifier dernier (A) suivant = nouveau (B)
-    modifier UNBI dernier = nouveau
-
-    UNBI premier = (A), dernier = (B)
-    A precedent = NULL
-    A suivant = B
-    B precedent = A
-    B suivant = NULL
-
-    creer 3(nouveau) > C (precedent = dernier(B), suivant = NULL)
-    modifier dernier (B) suivant = nouveau (C)
-    modifier UNBI dernier = nouveau (C)
-
-    UNBI premier = (A), dernier = (C)
-    A precedent = NULL
-    A suivant = B
-    B precedent = A
-    B suivant = C
-    C precedent = B
-    C suivant = NULL
-
-    */
-    unbounded_int *unbo = creer_unbounded_int();
-    if (*e == '-') {
-        unbo->signe = '-';
-        e++;
-    }
-    else {
-        unbo->signe = '+';
-    }
-    while (*e != '\0') {
-        ajouter_chiffre_a_la_fin(*e, unbo);
-        unbo->len++;
-        e++;
-    }
-    return *unbo;
-}
 
 static unbounded_int *creer_unbounded_int() {
     unbounded_int* unbo = malloc(sizeof(unbounded_int));
@@ -133,6 +78,59 @@ static void ajouter_chiffre_au_debut(const char e, unbounded_int *unbo) {
     }
 }
 
+/*Prend une chaîne de caractère représentant un entier et renvoie le unbounded_int correspondant à cet entier. Si la chaîne de
+caractère ne représente pas un entier, on renvoie un unbounded_int avec l'attribut signe = '*'. */
+unbounded_int string2unbounded_int(const char *e) {
+    /*ALGORITHME
+    ABCDEFGHIJ
+    1234478909
+
+    creer 1(nouveau) > A (precedent = NULL, suivant = NULL)
+    modifier UNBI premier = nouveau, dernier = nouveau
+    
+    UNBI premier = (A), dernier = (A)
+    A precedent = NULL
+    A suivant = NULL
+
+    creer 2(nouveau) > B (precedent = dernier(A), suivant = NULL)
+    modifier dernier (A) suivant = nouveau (B)
+    modifier UNBI dernier = nouveau
+
+    UNBI premier = (A), dernier = (B)
+    A precedent = NULL
+    A suivant = B
+    B precedent = A
+    B suivant = NULL
+
+    creer 3(nouveau) > C (precedent = dernier(B), suivant = NULL)
+    modifier dernier (B) suivant = nouveau (C)
+    modifier UNBI dernier = nouveau (C)
+
+    UNBI premier = (A), dernier = (C)
+    A precedent = NULL
+    A suivant = B
+    B precedent = A
+    B suivant = C
+    C precedent = B
+    C suivant = NULL
+
+    */
+    unbounded_int *unbo = creer_unbounded_int();
+    if (*e == '-') {
+        unbo->signe = '-';
+        e++;
+    }
+    else {
+        unbo->signe = '+';
+    }
+    while (*e != '\0') {
+        ajouter_chiffre_a_la_fin(*e, unbo);
+        unbo->len++;
+        e++;
+    }
+    return *unbo;
+}
+
 /*Prend un long long et renvoie le unbounded_int correspondant.*/
 unbounded_int ll2unbounded_int(long long i) {
     int j = i;
@@ -189,6 +187,18 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
         if (a.len < b.len) {
             return -1;
         }
+        if (a.len == b.len) {
+            int tmp = strcmp(unbounded_int2string(a), unbounded_int2string(b));
+            if (tmp == 0) {
+                return 0;
+            }
+            if (tmp > 0) {
+                return 1;
+            }
+            if (tmp < 0) {
+                return -1;
+            }
+        }
     }
     if (a.signe == '-' && b.signe == '-') {
         if (a.len > b.len) {
@@ -197,7 +207,20 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
         if (a.len < b.len) {
             return 1;
         }
+        if (a.len == b.len) {
+            int tmp = strcmp(unbounded_int2string(a), unbounded_int2string(b));
+            if (tmp == 0) {
+                return 0;
+            }
+            if (tmp > 0) {
+                return -1;
+            }
+            if (tmp < 0) {
+                return 1;
+            }
+        }
     }
+    return -99;
 }
 
 
