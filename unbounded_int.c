@@ -226,6 +226,5 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
 /*Pareil que unbounded_int_cmp_unbounded_int() mais avec un long long en second argument.*/
 int unbounded_int_cmp_ll(unbounded_int a, long long b) {
     unbounded_int unbo_b = ll2unbounded_int(b);
-    unbounded_int_cmp_unbounded_int(a, unbo_b);
-    return -99;
+    return unbounded_int_cmp_unbounded_int(a, unbo_b);
 }
