@@ -223,28 +223,9 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
     return -99;
 }
 
-
-
-/*
-int unbounded_int_cmp_ll(unbounded_int a, long long b){
-    size_t length = sizeof(b)/sizeof(long long);
-    if((a.signe == '-' && b >= 0) || (a.len < length)){
-        return -1;
-    }
-    if((a.signe == '+' && b < 0) || (a.len > length)){
-        return 1;
-    }
-    long long tmp = b/pow(10,length-1);
-    while(a.premier != NULL){
-        if(a.premier->c-'0' < tmp){
-            return -1;
-        }
-        if(a.premier->c-'0' > tmp){
-            return 1;
-        }
-        a.premier = a.premier->suivant;
-        tmp = tmp/pow(10,length-1);
-    }
-    return 0;
+/*Pareil que unbounded_int_cmp_unbounded_int() mais avec un long long en second argument.*/
+int unbounded_int_cmp_ll(unbounded_int a, long long b) {
+    unbounded_int unbo_b = ll2unbounded_int(b);
+    unbounded_int_cmp_unbounded_int(a, unbo_b);
+    return -99;
 }
-*/
