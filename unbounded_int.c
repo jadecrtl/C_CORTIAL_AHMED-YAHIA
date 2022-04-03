@@ -159,6 +159,10 @@ char *unbounded_int2string(unbounded_int i) {
         exit(1);
     }
     int j = 0;
+    if(i.signe == '-'){
+        e[j] = i.signe;
+        j++;
+    }
     while(i.premier != NULL) {
         e[j] = i.premier->c;
         j++;

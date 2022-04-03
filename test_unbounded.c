@@ -8,7 +8,7 @@ void affiche(unbounded_int *unbo);
 void afficheUnboPasPointeur(unbounded_int unbo);
 void test_string2unbounded_int(const char *e, const char signe_voulu, const size_t len_voulu);
 void test_ll2unbounded_int(long long test);
-void test_unbounded_int2string(unbounded_int unbo);
+void test_unbounded_int2string(const char *c);
 void test_unbounded_int_cmp_unbounded_int(const char *test_a, const char *test_b, const int resultat_voulu);
 void test_unbounded_int_cmp_ll(const char *test_a, long long test_b, const int resultat_voulu);
 
@@ -28,11 +28,10 @@ int main(void) {
     test_ll2unbounded_int(-123456789);
 
     printf("\n\nTest unbounded_int2string : \n\n");
-    //on crée un unbounded_int
-    unbounded_int* u = malloc(sizeof(unbounded_int)); // il faut utiliser un pointeur d'unbounded_int, sinon ça double le unbounded_int
-    *u = ll2unbounded_int(123456789); //on initialise l'unbounded_int avec la fonction qui prend un long long et la transforme en unbounded_int
-    test_unbounded_int2string(*u);
-    free(u);
+    test_unbounded_int2string("5230");
+    test_unbounded_int2string("-5230");
+    test_unbounded_int2string("26a8");
+    
 
     printf("\n\nTest unbounded_int_cmp_unbounded_int : \n\n");
 
@@ -136,11 +135,25 @@ void test_ll2unbounded_int(long long test) {
     //free(ubi);
 }
 
-void test_unbounded_int2string(unbounded_int unbo) {
-    char *e = unbounded_int2string(unbo);
-    afficheUnboPasPointeur(unbo);
-    puts(e);//puts(e) écrit la chaine de caractère du tableau de char e
-    printf("\nOK test_unbounded_int2string\n\n");
+void test_unbounded_int2string(const char *resultat) {
+    unbounded_int *u = malloc(sizeof(unbounded_int));
+    if (u == NULL) {
+        perror("\ntest_unbounded_int2string : La création de l'unbounded_int a échouée\n");
+        exit(1);
+    }
+    *u = string2unbounded_int(resultat);
+    char *res = unbounded_int2string(*u);
+    puts(res); //puts(e) écrit la chaine de caractère du tableau de char e
+    puts(resultat);
+    while(*res != '\0' && *resultat != '\0'){
+        if(*res != *resultat){
+            printf("\nWRONG test_string2unbounded_int\n\n");
+            return;
+        }
+        res++;
+        resultat++;
+    }
+    printf("\nOK test_string2unbounded_int\n\n");
 }
 
 void test_unbounded_int_cmp_unbounded_int(const char *test_a, const char *test_b, const int resultat_voulu) {
