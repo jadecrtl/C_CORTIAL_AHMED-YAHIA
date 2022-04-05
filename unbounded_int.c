@@ -12,6 +12,9 @@ static unbounded_int *creer_unbounded_int();
 static chiffre *creer_chiffre();
 static void ajouter_chiffre_a_la_fin(const char e, unbounded_int *unbo);
 static void ajouter_chiffre_au_debut(const char e, unbounded_int *unbo);
+static unbounded_int somme_2unbounded_int_positifs(unbounded_int u1, unbounded_int u2);
+static unbounded_int difference_2unbounded_int_positifs(unbounded_int u1, unbounded_int u2);
+static unbounded_int nettoyer_unbounded_int(unbounded_int u);
 
 static unbounded_int *creer_unbounded_int() {
     unbounded_int* unbo = malloc(sizeof(unbounded_int));
@@ -231,4 +234,105 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
 int unbounded_int_cmp_ll(unbounded_int a, long long b) {
     unbounded_int unbo_b = ll2unbounded_int(b);
     return unbounded_int_cmp_unbounded_int(a, unbo_b);
+}
+
+static unbounded_int somme_2unbounded_int_positifs(unbounded_int u1, unbounded_int u2){
+    unbounded_int* u3 = creer_unbounded_int();
+    u3->signe = '+';
+    int retenue = 0;
+    while(u1.dernier != NULL || u2.dernier != NULL){
+        if(u1.len > u2.len){
+            if(u1.dernier != NULL){
+                int addition = 0;
+                if(u2.dernier != NULL){
+                    addition = ((u1.dernier->c - '0')+(u2.dernier->c - '0') + retenue)%10;
+                    retenue = ((u1.dernier->c - '0')+(u2.dernier->c - '0') + retenue)/10;
+                    ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u2.dernier = u2.dernier->precedent;
+                    u3->len++;
+                } else {
+                    addition = ((u1.dernier->c - '0') + retenue)%10;
+                    retenue = ((u1.dernier->c - '0') + retenue)/10;
+                    ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u3->len++;
+                }
+                u1.dernier = u1.dernier->precedent;
+            } 
+        } else{
+            if(u2.dernier != NULL){
+                int addition = 0;
+                if(u1.dernier != NULL){
+                    addition = ((u1.dernier->c - '0')+(u2.dernier->c - '0') + retenue)%10;
+                    retenue = ((u1.dernier->c - '0')+(u2.dernier->c - '0') + retenue)/10;
+                    ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u1.dernier = u1.dernier->precedent;
+                    u3->len++;
+                } else {
+                    addition = ((u2.dernier->c - '0') + retenue)%10;
+                    retenue = ((u2.dernier->c - '0') + retenue)/10;
+                    ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u3->len++; 
+                }
+                u2.dernier = u2.dernier->precedent;
+            } 
+        }      
+    }
+    if(retenue != 0){
+        ajouter_chiffre_au_debut((char)retenue+'0',u3);
+        u3->len++;
+    }
+    return *u3;
+}
+
+static unbounded_int difference_2unbounded_int_positifs(unbounded_int u1, unbounded_int u2){
+    unbounded_int* u3 = creer_unbounded_int();
+    u3->signe = '+';
+    int retenue = 0;
+    while(u1.dernier != NULL || u2.dernier != NULL){
+        if(u1.dernier != NULL){
+            int addition = 0;
+            if(u2.dernier != NULL){
+                addition = (u1.dernier->c - '0')-(u2.dernier->c - '0') + retenue;
+                if(addition < 0){
+                    addition += 10;
+                    retenue = -1;
+                } else {
+                    retenue = 0;
+                }
+                ajouter_chiffre_au_debut((char)addition+'0',u3);
+                u2.dernier = u2.dernier->precedent;
+                u3->len++;
+            } else {
+                addition = (u1.dernier->c - '0') + retenue;
+                if(addition < 0){
+                    addition += 10;
+                    retenue = -1;
+                } else {
+                    retenue = 0;
+                }
+                ajouter_chiffre_au_debut((char)addition+'0',u3);
+                u3->len++;
+            }
+            u1.dernier = u1.dernier->precedent;
+        }       
+    }
+    return nettoyer_unbounded_int(*u3);
+}
+
+static unbounded_int nettoyer_unbounded_int(unbounded_int u){
+    while(u.premier != NULL && u.premier->c == '0' && u.len != 1){
+        u.premier = u.premier->suivant;
+        u.premier->precedent = NULL;
+        u.len--;
+    }
+    return u;
+}
+
+/*Renvoie la somme de a et b en unbounded_int.*/
+unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b){
+    return somme_2unbounded_int_positifs(a,b);
+}
+
+unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b){
+    return difference_2unbounded_int_positifs(a,b);
 }
