@@ -13,6 +13,8 @@ void test_unbounded_int_cmp_unbounded_int(const char *test_a, const char *test_b
 void test_unbounded_int_cmp_ll(const char *test_a, long long test_b, const int resultat_voulu);
 void test_somme_2unbounded_int_positifs(const char *test_a, const char* test_b, const char* resultat);
 void test_difference_2unbounded_int_positifs(const char *test_a, const char* test_b, const char* resultat);
+void test_somme(const char *test_a, const char* test_b, const char* resultat);
+void test_difference(const char *test_a, const char* test_b, const char* resultat);
 
 int main(void) {
     printf("\nTest string2unbounded_int : \n\n");
@@ -61,20 +63,25 @@ int main(void) {
     test_unbounded_int_cmp_ll("567", 567, 0);
     test_unbounded_int_cmp_ll("-205567", -205567, 0);
 
-    printf("\n\nTest somme_2unbounded_int_positifs\n");
+    printf("\n\nTest somme\n");
 
     test_somme_2unbounded_int_positifs("123", "456", "579");
     test_somme_2unbounded_int_positifs("1234", "456", "1690");
     test_somme_2unbounded_int_positifs("123", "4567", "4690");
-    test_somme_2unbounded_int_positifs("678", "7865", "8543");
-    test_somme_2unbounded_int_positifs("999", "667", "1666");
-    test_somme_2unbounded_int_positifs("123", "0", "123");
+    test_somme_2unbounded_int_positifs("-678", "7865", "7187");
+    test_somme_2unbounded_int_positifs("999", "-667", "332");
+    test_somme_2unbounded_int_positifs("-123", "-10", "-133");
 
-    printf("\n\nTest difference_2unbounded_int_positifs\n");
+    printf("\n\nTest difference\n");
 
     test_difference_2unbounded_int_positifs("500", "456", "44");
     test_difference_2unbounded_int_positifs("1234", "456", "778");
-    test_difference_2unbounded_int_positifs("96", "96", "0");
+    test_difference_2unbounded_int_positifs("6", "96", "-90");
+    test_difference_2unbounded_int_positifs("-500", "-46", "-454");
+    test_difference_2unbounded_int_positifs("-124", "456", "-580");
+    test_difference_2unbounded_int_positifs("600", "-96", "696");
+    test_difference_2unbounded_int_positifs("-600", "200", "-800");
+    test_difference_2unbounded_int_positifs("-600", "-600", "0");
 
     printf("\n\n******* TEST OK ********\n\n");
     return 0;
@@ -311,3 +318,5 @@ void test_difference_2unbounded_int_positifs(const char *test_a, const char* tes
     }
     printf("\nOK test_difference_2unbounded_int_positifs\n\n");
 }
+
+

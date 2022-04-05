@@ -238,7 +238,11 @@ int unbounded_int_cmp_ll(unbounded_int a, long long b) {
 
 static unbounded_int somme_2unbounded_int_positifs(unbounded_int u1, unbounded_int u2){
     unbounded_int* u3 = creer_unbounded_int();
-    u3->signe = '+';
+    if(u1.signe == '-' && u2.signe == '-'){
+        u3->signe = '-';
+    } else{
+        u3->signe = '+';
+    }
     int retenue = 0;
     while(u1.dernier != NULL || u2.dernier != NULL){
         if(u1.len > u2.len){
@@ -286,34 +290,69 @@ static unbounded_int somme_2unbounded_int_positifs(unbounded_int u1, unbounded_i
 
 static unbounded_int difference_2unbounded_int_positifs(unbounded_int u1, unbounded_int u2){
     unbounded_int* u3 = creer_unbounded_int();
-    u3->signe = '+';
+    int estNegatif = 0;
+    if(unbounded_int_cmp_unbounded_int(u1,u2) == -1){
+        u3->signe = '-';
+        estNegatif = 1;
+    } else{
+        u3->signe = '+';
+    }
     int retenue = 0;
     while(u1.dernier != NULL || u2.dernier != NULL){
-        if(u1.dernier != NULL){
-            int addition = 0;
-            if(u2.dernier != NULL){
-                addition = (u1.dernier->c - '0')-(u2.dernier->c - '0') + retenue;
-                if(addition < 0){
-                    addition += 10;
-                    retenue = -1;
+        if(estNegatif == 0){
+            if(u1.dernier != NULL){
+                int addition = 0;
+                if(u2.dernier != NULL){
+                    addition = (u1.dernier->c - '0')-(u2.dernier->c - '0') + retenue;
+                    if(addition < 0){
+                        addition += 10;
+                        retenue = -1;
+                    } else {
+                        retenue = 0;
+                    }
+                    ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u2.dernier = u2.dernier->precedent;
+                    u3->len++;
                 } else {
-                    retenue = 0;
+                    addition = (u1.dernier->c - '0') + retenue;
+                    if(addition < 0){
+                        addition += 10;
+                        retenue = -1;
+                    } else {
+                        retenue = 0;
+                    }
+                    ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u3->len++;
                 }
-                ajouter_chiffre_au_debut((char)addition+'0',u3);
-                u2.dernier = u2.dernier->precedent;
-                u3->len++;
-            } else {
-                addition = (u1.dernier->c - '0') + retenue;
-                if(addition < 0){
-                    addition += 10;
-                    retenue = -1;
-                } else {
-                    retenue = 0;
-                }
-                ajouter_chiffre_au_debut((char)addition+'0',u3);
-                u3->len++;
-            }
             u1.dernier = u1.dernier->precedent;
+            }
+        } else {
+            if(u2.dernier != NULL){
+                int addition = 0;
+                if(u1.dernier != NULL){
+                    addition = (u2.dernier->c - '0')-(u1.dernier->c - '0') + retenue;
+                    if(addition < 0){
+                        addition += 10;
+                        retenue = -1;
+                    } else {
+                        retenue = 0;
+                    }
+                    ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u1.dernier = u1.dernier->precedent;
+                    u3->len++;
+                } else {
+                    addition = (u2.dernier->c - '0') + retenue;
+                    if(addition < 0){
+                        addition += 10;
+                        retenue = -1;
+                    } else {
+                        retenue = 0;
+                    }
+                    ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u3->len++;
+                }
+                u2.dernier = u2.dernier->precedent;
+            }
         }       
     }
     return nettoyer_unbounded_int(*u3);
@@ -330,9 +369,33 @@ static unbounded_int nettoyer_unbounded_int(unbounded_int u){
 
 /*Renvoie la somme de a et b en unbounded_int.*/
 unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b){
-    return somme_2unbounded_int_positifs(a,b);
+    if(a.signe == '+' && b.signe == '+'){
+        return somme_2unbounded_int_positifs(a,b);
+    }
+    if(a.signe == '-' && b.signe == '-'){
+        return somme_2unbounded_int_positifs(a,b);
+    }
+    if(a.signe == '-' && b.signe == '+'){
+        a.signe = '+';
+        return difference_2unbounded_int_positifs(b,a);
+    }
+    b.signe = '+';
+    return difference_2unbounded_int_positifs(a,b);
 }
 
 unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b){
-    return difference_2unbounded_int_positifs(a,b);
+    if(a.signe == '+' && b.signe == '+'){
+        return difference_2unbounded_int_positifs(a,b);
+    }
+    if(a.signe == '-' && b.signe == '-'){
+        b.signe = '+';
+        a.signe = '+';
+        return difference_2unbounded_int_positifs(b,a);
+    }
+    if(a.signe == '+' && b.signe == '-'){
+        b.signe = '+';
+        return somme_2unbounded_int_positifs(a,b);
+    }
+    b.signe = '-';
+    return somme_2unbounded_int_positifs(a,b);
 }
