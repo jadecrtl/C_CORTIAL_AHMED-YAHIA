@@ -79,13 +79,15 @@ int main(void) {
 
     test_difference_2unbounded_int_positifs("500", "456", "44");
     test_difference_2unbounded_int_positifs("1234", "456", "778");
+    test_difference_2unbounded_int_positifs("1234", "1256", "-22");
     test_difference_2unbounded_int_positifs("6", "96", "-90");
     test_difference_2unbounded_int_positifs("-500", "-46", "-454");
     test_difference_2unbounded_int_positifs("-124", "456", "-580");
-    test_difference_2unbounded_int_positifs("600", "-96", "696");
+    test_difference_2unbounded_int_positifs("600", "-106", "706");
     test_difference_2unbounded_int_positifs("-600", "200", "-800");
     test_difference_2unbounded_int_positifs("-600", "-600", "0");
     test_difference_2unbounded_int_positifs("10000000", "17", "9999983");
+    test_difference_2unbounded_int_positifs("34", "-456", "490");
 
     printf("\n\n******* TEST OK ********\n\n");
     return 0;
