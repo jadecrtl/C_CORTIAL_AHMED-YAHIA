@@ -71,6 +71,9 @@ int main(void) {
     test_somme_2unbounded_int_positifs("-678", "7865", "7187");
     test_somme_2unbounded_int_positifs("999", "-667", "332");
     test_somme_2unbounded_int_positifs("-123", "-10", "-133");
+    test_somme_2unbounded_int_positifs("-678", "-786", "-1464");
+    test_somme_2unbounded_int_positifs("999", "-6673", "-5674");
+    test_somme_2unbounded_int_positifs("-123", "-10000", "-10123");
 
     printf("\n\nTest difference\n");
 
@@ -82,6 +85,7 @@ int main(void) {
     test_difference_2unbounded_int_positifs("600", "-96", "696");
     test_difference_2unbounded_int_positifs("-600", "200", "-800");
     test_difference_2unbounded_int_positifs("-600", "-600", "0");
+    test_difference_2unbounded_int_positifs("10000000", "17", "9999983");
 
     printf("\n\n******* TEST OK ********\n\n");
     return 0;
@@ -263,7 +267,7 @@ void test_somme_2unbounded_int_positifs(const char *test_a, const char* test_b, 
 
     *unbo_c = unbounded_int_somme(*unbo_a,*unbo_b);
     affiche(unbo_c);
-    printf("\ntaille du resultat : %d\n",unbo_c->len);
+    printf("\ntaille du resultat : %ld\n",unbo_c->len);
     printf("\nsigne du resultat : %c\n",unbo_c->signe);
 
     char* c = unbounded_int2string(*unbo_c);
@@ -304,7 +308,7 @@ void test_difference_2unbounded_int_positifs(const char *test_a, const char* tes
 
     *unbo_c = unbounded_int_difference(*unbo_a,*unbo_b);
     affiche(unbo_c);
-    printf("\ntaille du resultat : %d\n",unbo_c->len);
+    printf("\ntaille du resultat : %ld\n",unbo_c->len);
     printf("\nsigne du resultat : %c\n",unbo_c->signe);
 
     char* c = unbounded_int2string(*unbo_c);
