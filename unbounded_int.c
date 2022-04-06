@@ -383,6 +383,7 @@ unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b){
     return difference_2unbounded_int_positifs(a,b);
 }
 
+/*Renvoie la différence de a et b en unbounded_int.*/
 unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b){
     if(a.signe == '+' && b.signe == '+'){
         return difference_2unbounded_int_positifs(a,b);
