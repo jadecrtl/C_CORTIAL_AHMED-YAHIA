@@ -400,3 +400,24 @@ unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b){
     b.signe = '-';
     return somme_2unbounded_int_positifs(a,b);
 }
+
+/*Renvoie le produit de a et b en unbounded_int.*/
+unbounded_int unbounded_int_produit( unbounded_int a, unbounded_int b) {
+    /*ALGORITHME
+    
+    u1 = 1234
+    u2 = 56
+
+        1234
+      *   56
+      ------
+        7404
+     + 6170.
+      ------
+        7104
+
+    
+
+
+    */
+}
