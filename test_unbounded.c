@@ -15,6 +15,7 @@ void test_somme_2unbounded_int_positifs(const char *test_a, const char* test_b, 
 void test_difference_2unbounded_int_positifs(const char *test_a, const char* test_b, const char* resultat);
 void test_somme(const char *test_a, const char* test_b, const char* resultat);
 void test_difference(const char *test_a, const char* test_b, const char* resultat);
+void test_produit(const char *test_a, const char* test_b, const char* resultat);
 
 int main(void) {
     printf("\nTest string2unbounded_int : \n\n");
@@ -89,6 +90,25 @@ int main(void) {
     test_difference_2unbounded_int_positifs("10000000", "17", "9999983");
     test_difference_2unbounded_int_positifs("34", "-456", "490");
 
+    printf("\n\nTest produit\n");
+
+    test_produit("32","10","320");
+    test_produit("12","5","60");
+    test_produit("-6","-30","180");
+    test_produit("-32","10","-320");
+    test_produit("32","-10","-320");
+    test_produit("1","1","1");
+    test_produit("5","5","25");
+    test_produit("565","498","281370");
+    test_produit("565","98","55370");
+    test_produit("565","980","553700");
+    test_produit("5","350","1750");
+    test_produit("5605","-9884","-55399820");
+    test_produit("-5","-350","1750");
+    test_produit("5","3050","15250");
+    test_produit("0","350","0");
+    test_produit("5","0","0");
+
     printf("\n\n******* TEST OK ********\n\n");
     return 0;
 }
@@ -111,7 +131,7 @@ void affiche(unbounded_int *unbo) {
         chi = chi->suivant;
     }
     printf("\n");
-    //free(chi);
+    free(chi);
 }
 
 void afficheUnboPasPointeur(unbounded_int unbo) {
@@ -323,6 +343,47 @@ void test_difference_2unbounded_int_positifs(const char *test_a, const char* tes
         resultat++;
     }
     printf("\nOK test_difference_2unbounded_int_positifs\n\n");
+}
+
+void test_produit(const char *test_a, const char* test_b, const char* resultat){
+    unbounded_int *unbo_a = malloc(sizeof(unbounded_int));
+    if (unbo_a == NULL) {
+        perror("\ntest_produit : La création de l'unbounded_int a échouée\n");
+        exit(1);
+    }
+    *unbo_a = string2unbounded_int(test_a);
+    affiche(unbo_a);
+
+    unbounded_int *unbo_b = malloc(sizeof(unbounded_int));
+    if (unbo_b == NULL) {
+        perror("\ntest_produit : La création de l'unbounded_int a échouée\n");
+        exit(1);
+    }
+
+    *unbo_b = string2unbounded_int(test_b);
+    affiche(unbo_b);
+    
+    unbounded_int *unbo_c = malloc(sizeof(unbounded_int));
+    if (unbo_c == NULL) {
+        perror("\ntest_produit : La création de l'unbounded_int a échouée\n");
+        exit(1);
+    }
+
+    *unbo_c = unbounded_int_produit(*unbo_a,*unbo_b);
+    affiche(unbo_c);
+    printf("\ntaille du resultat : %ld\n",unbo_c->len);
+    printf("\nsigne du resultat : %c\n",unbo_c->signe);
+
+    char* c = unbounded_int2string(*unbo_c);
+    while(*c != '\0' && *resultat != '\0'){
+        if(*c != *resultat){
+            printf("\n** KO ** test_produit\n");
+            return;
+        }
+        c++;
+        resultat++;
+    }
+    printf("\nOK test__produit\n\n");
 }
 
 

@@ -12,6 +12,7 @@ static unbounded_int *creer_unbounded_int();
 static chiffre *creer_chiffre();
 static void ajouter_chiffre_a_la_fin(const char e, unbounded_int *unbo);
 static void ajouter_chiffre_au_debut(const char e, unbounded_int *unbo);
+static void modifier_chiffre(int e, chiffre *c);
 static unbounded_int somme_2unbounded_int_positifs(unbounded_int u1, unbounded_int u2);
 static unbounded_int difference_2unbounded_int_positifs(unbounded_int u1, unbounded_int u2);
 static unbounded_int nettoyer_unbounded_int(unbounded_int u);
@@ -401,9 +402,14 @@ unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b){
     return somme_2unbounded_int_positifs(a,b);
 }
 
+static void modifier_chiffre(int v, chiffre *c){
+    c->c = (char)(v + '0');
+}
+
 /*Renvoie le produit de a et b en unbounded_int.*/
 unbounded_int unbounded_int_produit( unbounded_int a, unbounded_int b) {
     /*ALGORITHME
+
     
     u1 = 1234
     u2 = 56
@@ -420,4 +426,47 @@ unbounded_int unbounded_int_produit( unbounded_int a, unbounded_int b) {
 
 
     */
+    int cpt = 0;
+    unbounded_int* u = creer_unbounded_int();
+    u->len = a.len+b.len-1;
+    for(int i = 0; i < u->len; i++){
+        ajouter_chiffre_au_debut('0',u);
+    }
+    chiffre* c = u->dernier;
+    if(a.signe == b.signe){
+        u->signe = '+';
+    } else{
+        u->signe = '-';
+    }
+    for(chiffre* j = b.dernier; j != NULL; j = j->precedent){ /* boucle sur les chiffres de b*/
+        int r = 0;
+        if (j->c-'0' == 0){
+           cpt++;
+           continue;
+        }
+        for(int i = 0; i < cpt; i++){
+            c = c->precedent;
+        }
+        for (chiffre* i = a.dernier; i != NULL; i = i->precedent){ /* boucle sur les chiffres de a*/
+            int v = (c->c - '0')+((i->c) - '0') * ((j->c) - '0') + r;
+
+            modifier_chiffre(v % 10, c);
+
+            r = v / 10;
+            if (c->precedent != NULL){
+                c = c->precedent;
+            }
+        }
+        if(r != 0 && c->c == '0'){
+            modifier_chiffre(r,c);
+        }
+        if(r != 0 && j->precedent == NULL){
+            ajouter_chiffre_au_debut((char)r+'0',u);
+            u->len++;
+        }
+        c = u->dernier;
+        cpt++;
+    }
+
+    return nettoyer_unbounded_int(*u);
 }
