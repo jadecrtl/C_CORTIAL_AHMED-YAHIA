@@ -2,8 +2,6 @@
 COMPILATEUR=gcc
 CFLAGS=-Wall -g -pedantic
 EXEC=test_unbounded calc_unbounded_int
-SRC=unbounded_int.c test_unbounded.c calc_unbounded_int.c
-OBJ=$(SRC:.c=.o)
 
 # $@ Le nom de la cible
 # $< Le nom de la première dépendance
