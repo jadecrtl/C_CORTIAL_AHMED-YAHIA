@@ -1,8 +1,8 @@
 #url du lien web pour faire des makefile : https://gl.developpez.com/tutoriel/outil/makefile/
 COMPILATEUR=gcc
 CFLAGS=-Wall -g -pedantic
-EXEC=test_unbounded
-SRC=unbounded_int.c test_unbounded.c
+EXEC=test_unbounded calc_unbounded_int
+SRC=unbounded_int.c test_unbounded.c calc_unbounded_int.c
 OBJ=$(SRC:.c=.o)
 
 # $@ Le nom de la cible
@@ -21,7 +21,10 @@ OBJ=$(SRC:.c=.o)
 
 all : $(EXEC)
 
-test_unbounded: $(OBJ)
+calc_unbounded_int: calc_unbounded_int.o unbounded_int.o
+	$(COMPILATEUR) -o $@ $^
+
+test_unbounded: unbounded_int.o test_unbounded.o
 	$(COMPILATEUR) -o $@ $^
 
 %.o: %.c
@@ -30,3 +33,4 @@ test_unbounded: $(OBJ)
 clean :
 	rm -f *.o
 	rm -f test_unbounded
+	rm -f calc_unbounded_int
