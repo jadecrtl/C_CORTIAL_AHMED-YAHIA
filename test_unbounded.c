@@ -198,7 +198,7 @@ void test_unbounded_int2string(const char *resultat) {
     while(*res != '\0' && *resultat != '\0'){
         if(*res != *resultat){
             printf("\n** KO ** test_string2unbounded_int\n");
-            return;
+            exit(1);
         }
         res++;
         resultat++;
@@ -296,7 +296,7 @@ void test_somme_2unbounded_int_positifs(const char *test_a, const char* test_b, 
     while(*c != '\0' && *resultat != '\0'){
         if(*c != *resultat){
             printf("\n** KO ** test_somme_2unbounded_int_positifs\n");
-            return;
+            exit(1);
         }
         c++;
         resultat++;
@@ -337,7 +337,7 @@ void test_difference_2unbounded_int_positifs(const char *test_a, const char* tes
     while(*c != '\0' && *resultat != '\0'){
         if(*c != *resultat){
             printf("\n** KO ** test_difference_2unbounded_int_positifs\n");
-            return;
+            exit(1);
         }
         c++;
         resultat++;
@@ -378,7 +378,7 @@ void test_produit(const char *test_a, const char* test_b, const char* resultat){
     while(*c != '\0' && *resultat != '\0'){
         if(*c != *resultat){
             printf("\n** KO ** test_produit\n");
-            return;
+            exit(1);
         }
         c++;
         resultat++;
