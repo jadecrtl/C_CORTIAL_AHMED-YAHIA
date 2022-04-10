@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include "unbounded_int.h"
 
@@ -10,12 +11,10 @@ FILE *fichier_resultat;
 typedef struct variable{
     char *nom;
     struct variable *suivant;
-    unbounded_int valeur;
-    struct variable *precedent;
+    unbounded_int *valeur;
 }variable;
 
 typedef struct {
-    size_t len;
     variable *premier;
     variable *dernier;
 }liste_variable;
@@ -23,10 +22,36 @@ typedef struct {
 void recupere_argument(int argc, char *argv[]);
 FILE *ouvrir_fichier_en_lecture(char *nom_fichier);
 FILE *ouvrir_fichier_en_ecriture(char *nom_fichier);
+variable *creer_variable();
+void ajouter_variable(char *nomVar, unbounded_int *unbo);
+variable *rechercher_variable(char *nom_variable);
+
+void test_afficher_variables();
+void test_ajout_variable(char *nom, char *charUnbo, char *nomAttendu, char *charUnboAttendu);
+void test_recherche_variable(char *nom_attendu, char *char_unbo_attendu, bool resultat_recherche_attendu);
+
+liste_variable *variables;
 
 int main(int argc, char *argv[]) {
-    printf("hello world calc_unbounded_int\n");
     recupere_argument(argc, argv);
+    variables = malloc(sizeof(liste_variable));
+    if (variables == NULL) {
+        perror("\ncreer_liste_variable : la création de la liste de variable a échouée\n");
+        exit(1);
+    }
+    test_ajout_variable("a", "123", "a", "123");
+    test_ajout_variable("b", "123456", "b", "123456");
+    test_afficher_variables();
+    test_recherche_variable("a", "123", true);
+    test_recherche_variable("b", "123456", true);
+    test_recherche_variable("a", "1230", false);
+    test_recherche_variable("c", "123", false);
+    test_recherche_variable("d", "56789", false); 
+
+    printf("****************************\n");
+    printf("**********TEST OK **********\n");
+    printf("****************************\n");
+
     fclose(fichier_source);
     fclose(fichier_resultat);
     return 0;
@@ -96,3 +121,92 @@ FILE *ouvrir_fichier_en_ecriture(char *nom_fichier) {
     }
     return fichier;
 }
+
+variable *creer_variable() {
+    variable* var = malloc(sizeof(variable));
+    if (var == NULL) {
+        perror("\ncreer_variable : La création de la variable a échouée\n");
+        exit(1);
+    }
+    return var;
+}
+
+void ajouter_variable(char *nomVar, unbounded_int *unbo) {
+    variable *var = creer_variable();
+    var->nom = nomVar;
+    var->valeur = unbo;
+    if (variables->premier == NULL && variables->dernier == NULL) {
+        variables->premier = var;
+        variables->dernier = var;
+    }
+    else {
+        variables->dernier->suivant = var;
+        variables->dernier = var;
+    }
+    var->suivant = NULL;
+    printf("variable <%s> ajoutée (%s)\n", nomVar, unbounded_int2string(*unbo));
+}
+
+variable *rechercher_variable(char *nom_variable) {
+    variable *tmp = creer_variable();
+    tmp = variables->premier;
+    if (strcmp(tmp->nom, nom_variable) == 0) {
+        return tmp;
+    }
+    while(tmp->suivant != NULL) {
+        tmp = tmp->suivant;
+        if (strcmp(tmp->nom, nom_variable) == 0) {
+            return tmp;
+        }
+    }
+    printf("**** ERREUR **** : la variable <%s> n'existe pas.\n", nom_variable);
+    return NULL;//FAIRE ATTENTION
+}
+
+void test_afficher_variables() {
+    variable *tmp = creer_variable();
+    tmp = variables->premier;
+    int i = 0;
+    printf("%d : [%s = %s]\n", i, tmp->nom, unbounded_int2string(*tmp->valeur));
+    while(tmp->suivant != NULL) {
+        tmp = tmp->suivant;
+        i++;
+        printf("%d : [%s = %s]\n", i, tmp->nom, unbounded_int2string(*tmp->valeur));
+    }
+}
+
+void test_ajout_variable(char *nom, char *charUnbo, char *nomAttendu, char *charUnboAttendu) {
+    unbounded_int* ubi = malloc(sizeof(unbounded_int));
+    if (ubi == NULL) {
+        perror("\ntest_string2unbounded_int : La création de l'unbounded_int a échouée\n");
+        exit(1);
+    }
+    *ubi = string2unbounded_int(charUnbo);
+    ajouter_variable(nom, ubi);
+    printf("OK test_ajout_variable : %s = %s\n", nom, charUnbo);
+}
+
+void test_recherche_variable(char *nom_attendu, char *char_unbo_attendu, bool resultat_recherche_attendu) {
+    variable *varRecherchee = rechercher_variable(nom_attendu);
+    bool resultat_recherche = true;
+    if (varRecherchee == NULL) {
+        //printf("**** KO **** test_recherche_variable non trouvée : %s = %s\n", nom_attendu, char_unbo_attendu);
+        resultat_recherche = false;        
+    }
+    else {
+    //variable trouvée mais pas la bonne valeur pour l'unbounded_int
+        if (strcmp(char_unbo_attendu, unbounded_int2string(*varRecherchee->valeur)) != 0) {
+            //printf("**** KO **** test_ajout_variable : la valeur de cette var <%s> ne correspond pas à (%s)\n",nom_attendu, char_unbo_attendu);
+            //exit(1);
+            resultat_recherche = false;
+        }
+    }
+    if (resultat_recherche == resultat_recherche_attendu) {
+        //printf("OK test_recherche_variable : %s = %s\n", nom_attendu, char_unbo_attendu);
+    }
+    else {
+        //printf("**** KO **** test_recherche_variable : %s = %s\n", nom_attendu, char_unbo_attendu);
+        exit(1);
+    }
+}
+
