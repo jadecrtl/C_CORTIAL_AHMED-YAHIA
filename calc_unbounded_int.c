@@ -48,6 +48,20 @@ int main(int argc, char *argv[]) {
     test_recherche_variable("c", "123", false);
     test_recherche_variable("d", "56789", false); 
 
+    test_ajout_variable("abcd", "123456", "abcd", "123456");
+    test_afficher_variables();
+    test_recherche_variable("abcd", "123456", true);
+
+    /*
+    POUR ajout_variable :
+        * ne pas ajouter une variable qui CONTIENT "print" ou 0-9
+        * ne pas ajouter une variable qui EST DÉJÀ dans la liste SAUF si on fait une réassignation 
+    */
+
+
+    test_ajout_variable("ab12cd", "123456", "ab12cd", "123456");
+    test_recherche_variable("ab12cd", "123456", true);
+
     printf("****************************\n");
     printf("**********TEST OK **********\n");
     printf("****************************\n");
