@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <ctype.h>
+#include <math.h>
+
 
 #include "unbounded_int.h"
 
@@ -25,6 +28,10 @@ FILE *ouvrir_fichier_en_ecriture(char *nom_fichier);
 variable *creer_variable();
 void ajouter_variable(char *nomVar, unbounded_int *unbo);
 variable *rechercher_variable(char *nom_variable);
+void compare_chaine(char *nomVar);
+void stdin_et_stdout_aucun_argument();
+//void fichier_to_stdout(fichier_source); à développer plus tard
+//void stdin_to_fichier(fichier_resultat); à développer plus tard
 
 void test_afficher_variables();
 void test_ajout_variable(char *nom, char *charUnbo, char *nomAttendu, char *charUnboAttendu);
@@ -52,15 +59,26 @@ int main(int argc, char *argv[]) {
     test_afficher_variables();
     test_recherche_variable("abcd", "123456", true);
 
+    //test_ajout_variable("printab", "123", "printab", "123");
+    //test_ajout_variable("abprint", "123", "printab", "123");
+    //test_ajout_variable("abprintab", "123", "printab", "123");
+    //test_ajout_variable("abpoprintab", "123", "printab", "123");
+    //test_ajout_variable("pabprintab", "123", "printab", "123");
+    //test_ajout_variable("abpoprint", "123", "printab", "123");
+    //test_ajout_variable("abopri", "723", "printab", "123");
+
+
     /*
     POUR ajout_variable :
-        * ne pas ajouter une variable qui CONTIENT "print" ou 0-9
+        * ne pas ajouter une variable qui CONTIENT "print" ou 0-9 FAIT
         * ne pas ajouter une variable qui EST DÉJÀ dans la liste SAUF si on fait une réassignation 
     */
 
 
-    test_ajout_variable("ab12cd", "123456", "ab12cd", "123456");
-    test_recherche_variable("ab12cd", "123456", true);
+    //test_ajout_variable("ab12cd", "123456", "ab12cd", "123456");
+    //test_ajout_variable("ab2", "12", "ab2", "12");
+    //test_ajout_variable("2ab", "12", "2ab", "12");
+    test_ajout_variable("a2b", "12", "a2b", "12");
 
     printf("****************************\n");
     printf("**********TEST OK **********\n");
@@ -71,23 +89,27 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+void stdin_et_stdout_aucun_argument() {
+    
+}
+
 void recupere_argument(int argc, char *argv[]) {
     for (int i = 0; i < argc; i++) {
         printf("argv[%d] = %s \n", i, argv[i]);
     }
     if (argc == 1) {
-        printf("faire stdin ou stdout\n");
-        exit(1);
+        stdin_et_stdout_aucun_argument();
+        return;
     }
     if (argc == 3) {
         if (strcmp(argv[1], "-i") == 0) {
-            printf("faire stdout\n");
+            //fichier_to_stdout(fichier_source); à développer plus tard
             printf("fichier source = %s\n", argv[2]);
             fichier_source = ouvrir_fichier_en_lecture(argv[2]);
             return;
         }
         if (strcmp(argv[1], "-o") == 0) {
-            printf("faire stdin\n");
+            //stdin_to_fichier(fichier_resultat); à développer plus tard
             printf("fichier resultat = %s\n", argv[2]);
             fichier_resultat = ouvrir_fichier_en_ecriture(argv[2]);
             return;
@@ -146,6 +168,17 @@ variable *creer_variable() {
 }
 
 void ajouter_variable(char *nomVar, unbounded_int *unbo) {
+    char *i = nomVar;
+    while (*i != '\0') {
+        if (*i == 'p') {
+            compare_chaine(i);
+        }
+        if (isdigit(*i)){
+            printf("Le nom de <%s> ne doit pas contenir de chiffre\n", nomVar);
+            exit(1);
+        }
+        i++;
+    }
     variable *var = creer_variable();
     var->nom = nomVar;
     var->valeur = unbo;
@@ -159,6 +192,17 @@ void ajouter_variable(char *nomVar, unbounded_int *unbo) {
     }
     var->suivant = NULL;
     printf("variable <%s> ajoutée (%s)\n", nomVar, unbounded_int2string(*unbo));
+}
+
+void compare_chaine(char *nomVar) {
+    char *mot_print = "print";
+    for(int i = 0; i < 5; i++) {
+        if (mot_print[i] != nomVar[i]) {
+            return;
+        }
+    }
+    printf("<%s> : Le mot print ne peut pas être implémenté dans le nom d'une variable\n", nomVar);
+    exit(1);
 }
 
 variable *rechercher_variable(char *nom_variable) {
