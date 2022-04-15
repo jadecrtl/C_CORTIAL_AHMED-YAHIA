@@ -30,8 +30,11 @@ void ajouter_variable(char *nomVar, unbounded_int *unbo);
 variable *rechercher_variable(char *nom_variable);
 void compare_chaine(char *nomVar);
 void stdin_et_stdout_aucun_argument();
+void interprete_fichier();
+void interprete_ligne(char *s);
 //void fichier_to_stdout(fichier_source); à développer plus tard
 //void stdin_to_fichier(fichier_resultat); à développer plus tard
+
 
 void test_afficher_variables();
 void test_ajout_variable(char *nom, char *charUnbo, char *nomAttendu, char *charUnboAttendu);
@@ -46,7 +49,7 @@ int main(int argc, char *argv[]) {
         perror("\ncreer_liste_variable : la création de la liste de variable a échouée\n");
         exit(1);
     }
-    test_ajout_variable("a", "123", "a", "123");
+    /*test_ajout_variable("a", "123", "a", "123");
     test_ajout_variable("b", "123456", "b", "123456");
     test_afficher_variables();
     test_recherche_variable("a", "123", true);
@@ -57,7 +60,7 @@ int main(int argc, char *argv[]) {
 
     test_ajout_variable("abcd", "123456", "abcd", "123456");
     test_afficher_variables();
-    test_recherche_variable("abcd", "123456", true);
+    test_recherche_variable("abcd", "123456", true);*/
 
     //test_ajout_variable("printab", "123", "printab", "123");
     //test_ajout_variable("abprint", "123", "printab", "123");
@@ -78,7 +81,9 @@ int main(int argc, char *argv[]) {
     //test_ajout_variable("ab12cd", "123456", "ab12cd", "123456");
     //test_ajout_variable("ab2", "12", "ab2", "12");
     //test_ajout_variable("2ab", "12", "2ab", "12");
-    test_ajout_variable("a2b", "12", "a2b", "12");
+    //test_ajout_variable("a2b", "12", "a2b", "12");
+    
+    
 
     printf("****************************\n");
     printf("**********TEST OK **********\n");
@@ -119,6 +124,7 @@ void recupere_argument(int argc, char *argv[]) {
         if (strcmp(argv[1], "-i") == 0 && strcmp(argv[3], "-o") == 0) {
             printf("fichier source = %s\n", argv[2]);
             fichier_source = ouvrir_fichier_en_lecture(argv[2]);
+            interprete_fichier();
             printf("fichier resultat = %s\n", argv[4]);
             fichier_resultat = ouvrir_fichier_en_ecriture(argv[4]);
             return;
@@ -126,6 +132,7 @@ void recupere_argument(int argc, char *argv[]) {
         if (strcmp(argv[1], "-o") == 0 && strcmp(argv[3], "-i") == 0) {
             printf("fichier source = %s\n", argv[4]);
             fichier_source = ouvrir_fichier_en_lecture(argv[4]);
+            interprete_fichier();
             printf("fichier resultat = %s\n", argv[2]);
             fichier_resultat = ouvrir_fichier_en_ecriture(argv[2]);
             return;
@@ -266,5 +273,21 @@ void test_recherche_variable(char *nom_attendu, char *char_unbo_attendu, bool re
         //printf("**** KO **** test_recherche_variable : %s = %s\n", nom_attendu, char_unbo_attendu);
         exit(1);
     }
+}
+
+void interprete_fichier(){
+    char *stock_ligne = malloc(sizeof(char));
+    while(fgets(stock_ligne, 1024, fichier_source) != NULL){
+        interprete_ligne(stock_ligne);
+    }
+    if(ferror(fichier_source)){
+        perror("Erreur fgets !");
+        exit(1);
+    }
+    free(stock_ligne);
+}
+
+void interprete_ligne(char *s){
+    printf("%s\n", s);
 }
 
