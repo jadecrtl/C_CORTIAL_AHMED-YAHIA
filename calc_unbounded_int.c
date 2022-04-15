@@ -28,7 +28,7 @@ FILE *ouvrir_fichier_en_ecriture(char *nom_fichier);
 variable *creer_variable();
 void ajouter_variable(char *nomVar, unbounded_int *unbo);
 variable *rechercher_variable(char *nom_variable);
-void compare_chaine(char *nomVar);
+int compare_chaine(char *nomVar);
 void stdin_et_stdout_aucun_argument();
 void interprete_fichier();
 void interprete_ligne(char *s);
@@ -43,12 +43,12 @@ void test_recherche_variable(char *nom_attendu, char *char_unbo_attendu, bool re
 liste_variable *variables;
 
 int main(int argc, char *argv[]) {
-    recupere_argument(argc, argv);
     variables = malloc(sizeof(liste_variable));
     if (variables == NULL) {
         perror("\ncreer_liste_variable : la création de la liste de variable a échouée\n");
         exit(1);
     }
+    recupere_argument(argc, argv);
     /*test_ajout_variable("a", "123", "a", "123");
     test_ajout_variable("b", "123456", "b", "123456");
     test_afficher_variables();
@@ -78,10 +78,10 @@ int main(int argc, char *argv[]) {
     */
 
 
-    //test_ajout_variable("ab12cd", "123456", "ab12cd", "123456");
-    //test_ajout_variable("ab2", "12", "ab2", "12");
-    //test_ajout_variable("2ab", "12", "2ab", "12");
-    //test_ajout_variable("a2b", "12", "a2b", "12");
+    /*test_ajout_variable("ab12cd", "123456", "ab12cd", "123456");
+    test_ajout_variable("ab2", "12", "ab2", "12");
+    test_ajout_variable("2ab", "12", "2ab", "12");
+    test_ajout_variable("a2b", "12", "a2b", "12");*/
     
     
 
@@ -176,10 +176,11 @@ variable *creer_variable() {
 
 void ajouter_variable(char *nomVar, unbounded_int *unbo) {
     char *i = nomVar;
+    if(compare_chaine(i) == 0){
+        printf("Le nom de <%s> ne doit pas contenir de print\n", nomVar);
+        exit(1);
+    }
     while (*i != '\0') {
-        if (*i == 'p') {
-            compare_chaine(i);
-        }
         if (isdigit(*i)){
             printf("Le nom de <%s> ne doit pas contenir de chiffre\n", nomVar);
             exit(1);
@@ -201,24 +202,34 @@ void ajouter_variable(char *nomVar, unbounded_int *unbo) {
     printf("variable <%s> ajoutée (%s)\n", nomVar, unbounded_int2string(*unbo));
 }
 
-void compare_chaine(char *nomVar) {
+int compare_chaine(char *nomVar) {
     char *mot_print = "print";
-    for(int i = 0; i < 5; i++) {
-        if (mot_print[i] != nomVar[i]) {
-            return;
+    while(*nomVar != '\0'){
+        if(strlen(nomVar) < 5){
+            return 1;
         }
+        if(*nomVar == 'p'){
+            for(int i = 0; i < 5; i++) {
+                if (mot_print[i] != nomVar[i]) {
+                    return 1;
+                }
+            }
+        }
+        nomVar++;
     }
-    printf("<%s> : Le mot print ne peut pas être implémenté dans le nom d'une variable\n", nomVar);
-    exit(1);
+    return 0;
 }
 
 variable *rechercher_variable(char *nom_variable) {
     variable *tmp = creer_variable();
     tmp = variables->premier;
+    if(tmp == NULL){
+        return NULL;
+    }
     if (strcmp(tmp->nom, nom_variable) == 0) {
         return tmp;
     }
-    while(tmp->suivant != NULL) {
+    while(tmp != NULL) {
         tmp = tmp->suivant;
         if (strcmp(tmp->nom, nom_variable) == 0) {
             return tmp;
@@ -288,6 +299,57 @@ void interprete_fichier(){
 }
 
 void interprete_ligne(char *s){
-    printf("%s\n", s);
+    int i = 0;
+    char *varG = malloc(sizeof(char));
+    char *varD = malloc(sizeof(char));
+    if(varG == NULL || varD == NULL){
+        perror("malloc error !");
+        exit(1);
+    }
+    char *tmp1 = varG;
+    char *tmp2 = varD;
+    while(*s != '\0'){
+        if(*s == ' '){
+            if(strcmp(tmp1,"print") == 0 && i == 0){
+                i = 2;
+            } else {
+                s++;
+            }
+            continue;
+        }
+        if(*s == '=' || i == 2){
+            i = 1;
+        }
+        if(i == 0){
+            // ajout *s dans varG
+            *varG = *s;
+            varG++;
+        }
+        if(i == 1){
+            // ajout *s dans varD
+            *varD = *s;
+            varD++;
+        }
+        s++;
+    }
+    *varG = '\0';
+    varG = tmp1;
+    *varD = '\0';
+    varD = tmp2;
+    if(varG == NULL){
+        printf("Ligne vide !\n");
+        return;
+    }
+    if(varD == NULL){
+        printf("Ligne invalide : interpretation impossible !");
+        return;
+    }
+    if(strcmp(varG,"print") == 0){
+        if(rechercher_variable(varD) == NULL && compare_chaine(varD) == 1){
+            printf("%s = 0\n",varD);
+        }
+    }
+    /*free(varG);
+    free(varD);*/
 }
 
