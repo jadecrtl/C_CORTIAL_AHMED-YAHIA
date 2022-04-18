@@ -33,6 +33,7 @@ void interprete_fichier();
 static void interprete_ligne(char *char_ligne);
 static void print_variable(char *char_ligne);
 static void variable_assignation_ou_operations(char *char_ligne, char *varG);
+static void variable_operation(int operation, char *varG, char *varD, char *char_ligne);
 
 //void fichier_to_stdout(fichier_source); à développer plus tard
 //void stdin_to_fichier(fichier_resultat); à développer plus tard
@@ -434,34 +435,212 @@ static void variable_assignation_ou_operations(char *char_ligne, char *varG) {
         perror("malloc error !\n");
         exit(1);
     }
-    char *tmp = varD;
+    char *pointeur = varD;
+    int i = 0;
+    int cpt_espace = 0;
     while (*char_ligne != '\0' && *char_ligne != '\n') {
         if (*char_ligne == ' ') {
             char_ligne++;
+            cpt_espace++;
             continue;
+        }
+        if (*char_ligne == '+' && strlen(pointeur) == 0) {
+            i = 1;
+            char_ligne++;
+            cpt_espace = 0;
+            continue;
+        }
+        if (strlen(pointeur) > 0 && cpt_espace > 0) {
+            *varD = '\0';
+            if(*char_ligne == '+'){
+                char_ligne++;
+                variable_operation(1,varG,pointeur,char_ligne);
+                return;
+            }
+            if(*char_ligne == '-'){
+                char_ligne++;
+                variable_operation(2,varG,pointeur,char_ligne);
+                return;
+            }
+            if(*char_ligne == '*'){
+                char_ligne++;
+                variable_operation(3,varG,pointeur,char_ligne);
+                return;
+            }
         }
         *varD = *char_ligne;
         varD++;
         char_ligne++;
+        cpt_espace = 0;
     }
     *varD = '\0';
-    varD = tmp;
+    varD = pointeur;
     //printf("%s\n",varG);
     variable *var = rechercher_variable(varG);
     unbounded_int unbo = string2unbounded_int(varD);
     if(unbo.signe == '*'){
         variable *tmp = rechercher_variable(varD);
-        if (tmp == NULL) {
+        if (tmp == NULL || i == 1) {
             printf("ERREUR : la variable n'existe pas");
             return;
+        } else {
+            var->valeur = tmp->valeur;
         }
-        else {
-
-        }
-    }
-    else {
+    } else {
         if (var == NULL) {
             ajouter_variable(varG, unbo);
+        } else {
+            var->valeur = unbo;
+        }
+    }
+}
+
+static void variable_operation(int operation, char *varG, char *varD, char *char_ligne){
+    char *op = malloc(sizeof(char));//Partie de la ligne qui contient la variable
+    if(op == NULL){
+        perror("malloc error !\n");
+        exit(1);
+    }
+    char *pointeur = op;
+    if(*char_ligne != ' '){
+        printf("Mauvaise indentation d'operation !\n");
+        return;
+    }
+    while (*char_ligne != '\0' && *char_ligne != '\n') {
+        if (*char_ligne == ' ') {
+            char_ligne++;
+            continue;
+        }
+        *op = *char_ligne;
+        op++;
+        char_ligne++;
+    }
+    *op = '\0';
+    op = pointeur;
+    if(strlen(op) == 0){
+        printf("Opération impossible !\n");
+        return;
+    }
+    variable *var = rechercher_variable(varG);
+    unbounded_int unbo1 = string2unbounded_int(varD);
+    unbounded_int unbo2 = string2unbounded_int(op);
+    if(unbo1.signe == '*' && unbo2.signe == '*'){
+        variable *tmp1 = rechercher_variable(varD);
+        variable *tmp2 = rechercher_variable(op);
+        if (tmp1 == NULL || tmp2 == NULL) {
+            printf("ERREUR : la variable n'existe pas");
+            return;
+        } else {
+            switch (operation){
+                case 1:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_somme(tmp1->valeur,tmp2->valeur));
+                    } else {
+                        var->valeur = unbounded_int_somme(tmp1->valeur,tmp2->valeur);
+                    }
+                    break;
+                case 2:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_difference(tmp1->valeur,tmp2->valeur));
+                    } else {
+                        var->valeur = unbounded_int_difference(tmp1->valeur,tmp2->valeur);
+                    }
+                    break;
+                case 3:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_produit(tmp1->valeur,tmp2->valeur));
+                    } else {
+                        var->valeur = unbounded_int_produit(tmp1->valeur,tmp2->valeur);
+                    }
+                    break;
+            }
+        }
+    }
+    if(unbo1.signe != '*' && unbo2.signe != '*'){
+        switch (operation){
+                case 1:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_somme(unbo1,unbo2));
+                    } else {
+                        var->valeur = unbounded_int_somme(unbo1,unbo2);
+                    }
+                    break;
+                case 2:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_difference(unbo1,unbo2));
+                    } else {
+                        var->valeur = unbounded_int_difference(unbo1,unbo2);
+                    }
+                    break;
+                case 3:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_produit(unbo1,unbo2));
+                    } else {
+                        var->valeur = unbounded_int_produit(unbo1,unbo2);
+                    }
+                    break;
+            }
+    }
+    if(unbo1.signe == '*' && unbo2.signe != '*'){
+        variable *tmp1 = rechercher_variable(varD);
+        if (tmp1 == NULL) {
+            printf("ERREUR : la variable n'existe pas");
+            return;
+        } else {
+            switch (operation){
+                case 1:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_somme(tmp1->valeur,unbo2));
+                    } else {
+                        var->valeur = unbounded_int_somme(tmp1->valeur,unbo2);
+                    }
+                    break;
+                case 2:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_difference(tmp1->valeur,unbo2));
+                    } else {
+                        var->valeur = unbounded_int_difference(tmp1->valeur,unbo2);
+                    }
+                    break;
+                case 3:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_produit(tmp1->valeur,unbo2));
+                    } else {
+                        var->valeur = unbounded_int_produit(tmp1->valeur,unbo2);
+                    }
+                    break;
+            }
+        }
+    }
+    if(unbo1.signe != '*' && unbo2.signe == '*'){
+        variable *tmp2 = rechercher_variable(op);
+        if (tmp2 == NULL) {
+            printf("ERREUR : la variable n'existe pas");
+            return;
+        } else {
+            switch (operation){
+                case 1:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_somme(unbo1,tmp2->valeur));
+                    } else {
+                        var->valeur = unbounded_int_somme(unbo1,tmp2->valeur);
+                    }
+                    break;
+                case 2:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_difference(unbo1,tmp2->valeur));
+                    } else {
+                        var->valeur = unbounded_int_difference(unbo1,tmp2->valeur);
+                    }
+                    break;
+                case 3:
+                    if(var == NULL){
+                        ajouter_variable(varG,unbounded_int_produit(unbo1,tmp2->valeur));
+                    } else {
+                        var->valeur = unbounded_int_produit(unbo1,tmp2->valeur);
+                    }
+                    break;
+            }
         }
     }
 }
