@@ -467,6 +467,8 @@ static void variable_assignation_ou_operations(char *char_ligne, char *varG) {
                 variable_operation(3,varG,pointeur,char_ligne);
                 return;
             }
+            printf("Entier ou variable mal indenté !\n");
+            return;
         }
         *varD = *char_ligne;
         varD++;
@@ -475,7 +477,6 @@ static void variable_assignation_ou_operations(char *char_ligne, char *varG) {
     }
     *varD = '\0';
     varD = pointeur;
-    //printf("%s\n",varG);
     variable *var = rechercher_variable(varG);
     unbounded_int unbo = string2unbounded_int(varD);
     if(unbo.signe == '*'){
@@ -497,6 +498,7 @@ static void variable_assignation_ou_operations(char *char_ligne, char *varG) {
 
 static void variable_operation(int operation, char *varG, char *varD, char *char_ligne){
     char *op = malloc(sizeof(char));//Partie de la ligne qui contient la variable
+    int cpt_espace = 0;
     if(op == NULL){
         perror("malloc error !\n");
         exit(1);
@@ -509,7 +511,12 @@ static void variable_operation(int operation, char *varG, char *varD, char *char
     while (*char_ligne != '\0' && *char_ligne != '\n') {
         if (*char_ligne == ' ') {
             char_ligne++;
+            cpt_espace++;
             continue;
+        }
+        if(strlen(pointeur) > 0 && cpt_espace > 0){
+            printf("Entier ou variable mal indenté !\n");
+            return;
         }
         *op = *char_ligne;
         op++;

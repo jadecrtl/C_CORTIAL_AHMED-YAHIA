@@ -107,7 +107,11 @@ int main(void) {
     test_produit("-5","-350","1750");
     test_produit("5","3050","15250");
     test_produit("0","350","0");
+    test_produit("5","6","30");
+    test_produit("6","5","30");
     test_produit("6","500","3000");
+    test_produit("60","5","300");
+    test_produit("500","6","3000");
 
     printf("\n\n******* TEST OK ********\n\n");
     return 0;

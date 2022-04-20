@@ -453,11 +453,14 @@ unbounded_int unbounded_int_produit( unbounded_int a, unbounded_int b) {
             modifier_chiffre(v % 10, c);
 
             r = v / 10;
+
+            printf("c = %c\n",c->c);
+        
             if (c->precedent != NULL){
                 c = c->precedent;
             }
         }
-        if(r != 0 && c->c == '0'){
+        if(r != 0 && j->precedent != NULL){
             modifier_chiffre(r,c);
         }
         if(r != 0 && j->precedent == NULL){
