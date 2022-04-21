@@ -1,5 +1,4 @@
 clear
-#rm -Rf *.swp
 make clean
 make all
 #./test_unbounded
