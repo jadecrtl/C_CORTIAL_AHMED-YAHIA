@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
     printf("**********TEST OK **********\n");
     printf("****************************\n");
 
-    //fclose(fichier_source); petit soucis "double free or corruption (!prev)"
+    fclose(fichier_source);//petit soucis "double free or corruption (!prev)"
     fclose(fichier_resultat);
     return 0;
 }

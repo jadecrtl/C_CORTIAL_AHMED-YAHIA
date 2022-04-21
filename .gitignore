@@ -53,3 +53,4 @@ dkms.conf
 
 # Les autres
 *.swp
+test/testArguments/*.swp
