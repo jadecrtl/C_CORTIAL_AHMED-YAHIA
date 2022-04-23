@@ -340,58 +340,6 @@ static void interprete_ligne(char *char_ligne){
     char_ligne++;
     variable_assignation_ou_operations(char_ligne, varG);
     return;
-/*
-    int i = 0;
-    char *varG = malloc(sizeof(char));//Partie de la ligne qui contient soit print soit une variable
-    char *varD = malloc(sizeof(char));//Partie après l'espace du print (variable) soit affectation d'une valeur soit opération
-    if(varG == NULL || varD == NULL){
-        perror("malloc error !");
-        exit(1);
-    }
-    char *tmp1 = varG;
-    char *tmp2 = varD;
-    while(*char_ligne != '\0'){//on avance dans cette boucle jusqu'à arriver à la fin de la ligne
-        if(*char_ligne == ' '){
-            if(strcmp(tmp1,"print") == 0 && i == 0){
-                i = 2;
-            } else {
-                char_ligne++;
-            }
-            continue;
-        }
-        if(*char_ligne == '=' || i == 2){
-            i = 1;
-        }
-        if(i == 0){
-            // ajout *s dans varG
-            *varG = *char_ligne;
-            varG++;
-        }
-        if(i == 1){
-            // ajout *s dans varD
-            *varD = *char_ligne;
-            varD++;
-        }
-        char_ligne++;
-    }
-    *varG = '\0';
-    varG = tmp1;//Permet de pointer sur le premier caractère de varG pour l'avoir en entier
-    *varD = '\0';
-    varD = tmp2;//Permet de pointer sur le premier caractère de varD pour l'avoir en entier
-    if(varG == NULL){
-        printf("Ligne vide !\n");
-        return;
-    }
-    if(varD == NULL){
-        printf("Ligne invalide : interpretation impossible !");
-        return;
-    }
-    if(strcmp(varG,"print") == 0){
-        if(rechercher_variable(varD) == NULL && compare_chaine(varD) == 1){
-            printf("%s = 0\n",varD);
-        }
-    }
-    */
 }
 
 static void print_variable(char *char_ligne) {
@@ -426,6 +374,11 @@ static void print_variable(char *char_ligne) {
     }
     if (rechercher_variable(varD) == NULL) {
         printf("%s = 0\n", varD);
+    }
+    else {
+        variable *res = rechercher_variable(varD);
+        char *unbo = unbounded_int2string(res->valeur);
+        printf("%s = %s\n", res->nom, unbo);
     }
 }
 
