@@ -315,9 +315,10 @@ void interprete_fichier(int nbr_argument){
                 perror("malloc erreur!!\n");
                 exit(1);
             }
-            scanf("%[^\n]", tmp_fichier_resultat);
-            strcat(tmp_fichier_resultat, "\n");
-            fputs(tmp_fichier_resultat, fichier_source);
+            while(fgets(tmp_fichier_resultat,1024,stdin) != NULL){
+                //strcat(tmp_fichier_resultat, "\n");
+                fputs(tmp_fichier_resultat, fichier_source);
+            }
             fseek(fichier_source,0,SEEK_SET);
             interprete_fichier(3);
             break;
