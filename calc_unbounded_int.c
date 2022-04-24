@@ -29,9 +29,9 @@ static variable *creer_variable();
 void ajouter_variable(char *nomVar, unbounded_int unbo);
 variable *rechercher_variable(char *nom_variable);
 static int compare_chaine(char *nomVar);
-void interprete_fichier();
-static void interprete_ligne(char *char_ligne);
-static void print_variable(char *char_ligne);
+void interprete_fichier(int nbr_argument);
+static void interprete_ligne(char *char_ligne, int nbr_argument);
+static void print_variable(char *char_ligne, int nbr_argument);
 static void variable_assignation_ou_operations(char *char_ligne, char *varG);
 static void variable_operation(int operation, char *varG, char *varD, char *char_ligne);
 
@@ -92,8 +92,8 @@ int main(int argc, char *argv[]) {
     printf("**********TEST OK **********\n");
     printf("****************************\n");
 
-    fclose(fichier_source);//petit soucis "double free or corruption (!prev)"
-    fclose(fichier_resultat);
+    //fclose(fichier_source);//petit soucis "double free or corruption (!prev)"
+    //fclose(fichier_resultat);//s'il n'existe pas on ne peut pas le close
     return 0;
 }
 
@@ -102,6 +102,7 @@ void recupere_argument(int argc, char *argv[]) {
         printf("argv[%d] = %s \n", i, argv[i]);
     }
     if (argc == 1) {
+        interprete_fichier(0);
         return;
     }
     if (argc == 3) {
@@ -109,12 +110,14 @@ void recupere_argument(int argc, char *argv[]) {
             //fichier_to_stdout(fichier_source); à développer plus tard
             printf("fichier source = %s\n", argv[2]);
             fichier_source = ouvrir_fichier_en_lecture(argv[2]);
+            interprete_fichier(1);
             return;
         }
         if (strcmp(argv[1], "-o") == 0) {
             //stdin_to_fichier(fichier_resultat); à développer plus tard
             printf("fichier resultat = %s\n", argv[2]);
             fichier_resultat = ouvrir_fichier_en_ecriture(argv[2]);
+            interprete_fichier(2);
             return;
         }
     }
@@ -122,17 +125,17 @@ void recupere_argument(int argc, char *argv[]) {
         if (strcmp(argv[1], "-i") == 0 && strcmp(argv[3], "-o") == 0) {
             printf("fichier source = %s\n", argv[2]);
             fichier_source = ouvrir_fichier_en_lecture(argv[2]);
-            interprete_fichier();
             printf("fichier resultat = %s\n", argv[4]);
             fichier_resultat = ouvrir_fichier_en_ecriture(argv[4]);
+            interprete_fichier(3);
             return;
         }
         if (strcmp(argv[1], "-o") == 0 && strcmp(argv[3], "-i") == 0) {
             printf("fichier source = %s\n", argv[4]);
             fichier_source = ouvrir_fichier_en_lecture(argv[4]);
-            interprete_fichier();
             printf("fichier resultat = %s\n", argv[2]);
             fichier_resultat = ouvrir_fichier_en_ecriture(argv[2]);
+            interprete_fichier(3);
             return;
         }
     }
@@ -157,9 +160,6 @@ static FILE *ouvrir_fichier_en_ecriture(char *nom_fichier) {
     if (fichier != NULL) {
         printf("%s ouvert en écriture\n", nom_fichier);//IMPOSSIBLE SI ON A PAS LES DROITS D'ECRITURE
     }//POSSIBLE DE L'OUVRIR EN ECRITURE MEME SI ON ECRIT ACTUELLEMENT DEDANS
-    else {
-        printf("impossible d'ouvrir <%s> en écriture\n", nom_fichier);
-    }
     return fichier;
 }
 
@@ -245,11 +245,10 @@ static void test_afficher_variables() {
     variable *tmp = creer_variable();
     tmp = variables->premier;
     int i = 0;
-    printf("%d : [%s = %s]\n", i, tmp->nom, unbounded_int2string(tmp->valeur));
-    while(tmp->suivant != NULL) {
-        tmp = tmp->suivant;
+    while(tmp != NULL) {
         i++;
         printf("%d : [%s = %s]\n", i, tmp->nom, unbounded_int2string(tmp->valeur));
+        tmp = tmp->suivant;
     }
 }
 
@@ -283,19 +282,59 @@ static void test_recherche_variable(char *nom_attendu, char *char_unbo_attendu, 
     }
 }
 
-void interprete_fichier(){
+void interprete_fichier(int nbr_argument){
     char *stock_ligne = malloc(sizeof(char));
-    while(fgets(stock_ligne, 1024, fichier_source) != NULL){
-        interprete_ligne(stock_ligne);
+    switch (nbr_argument){
+        case 0 :
+            fichier_source = fopen("tmp_scanf.txt","w+");
+            char *tmp = malloc(sizeof(char));
+            if (tmp == NULL) {
+                perror("malloc erreur!!\n");
+                exit(1);
+            }
+            scanf("%[^\n]", tmp);
+            strcat(tmp, "\n");
+            fputs(tmp, fichier_source);
+            fseek(fichier_source,0,SEEK_SET);
+            interprete_fichier(1);
+            break;
+        case 1 :    
+            while(fgets(stock_ligne, 1024, fichier_source) != NULL){
+                interprete_ligne(stock_ligne, nbr_argument);
+            }
+            if(ferror(fichier_source)){
+                perror("Erreur fgets !");
+                exit(1);
+            }
+            free(stock_ligne);
+            break;
+        case 2 :
+            fichier_source = fopen("tmp_scanf.txt","w+");
+            char *tmp_fichier_resultat = malloc(sizeof(char));
+            if (tmp_fichier_resultat == NULL) {
+                perror("malloc erreur!!\n");
+                exit(1);
+            }
+            scanf("%[^\n]", tmp_fichier_resultat);
+            strcat(tmp_fichier_resultat, "\n");
+            fputs(tmp_fichier_resultat, fichier_source);
+            fseek(fichier_source,0,SEEK_SET);
+            interprete_fichier(3);
+            break;
+        case 3 :    
+            while(fgets(stock_ligne, 1024, fichier_source) != NULL){
+                interprete_ligne(stock_ligne, nbr_argument);
+            }
+            if(ferror(fichier_source)){
+                perror("Erreur fgets !");
+                exit(1);
+            }
+            free(stock_ligne);
+            break;
     }
-    if(ferror(fichier_source)){
-        perror("Erreur fgets !");
-        exit(1);
-    }
-    free(stock_ligne);
 }
 
-static void interprete_ligne(char *char_ligne){
+static void interprete_ligne(char *char_ligne, int nbr_argument){
     /*ALGO
     Tant que je suis pas arrivé à la fin de la ligne
         SI j'ai des espaces 
@@ -317,7 +356,7 @@ static void interprete_ligne(char *char_ligne){
     while (*char_ligne != '\0' && *char_ligne != '=') {
         if (*char_ligne == ' ') {
             if (strcmp(tmp, "print") == 0) {
-                print_variable(char_ligne);
+                print_variable(char_ligne, nbr_argument);
                 return;
             }
             char_ligne++;
@@ -342,7 +381,7 @@ static void interprete_ligne(char *char_ligne){
     return;
 }
 
-static void print_variable(char *char_ligne) {
+static void print_variable(char *char_ligne, int nbr_argument) {
     char *varD = malloc(sizeof(char));//Partie de la ligne qui contient la variable
     if(varD == NULL){
         perror("malloc error !\n");
@@ -373,12 +412,28 @@ static void print_variable(char *char_ligne) {
         return;
     }
     if (rechercher_variable(varD) == NULL) {
-        printf("%s = 0\n", varD);
+        if (nbr_argument == 1) {
+            printf("%s = 0\n", varD);
+        }
+        if (nbr_argument == 3) {
+            char *res = malloc (sizeof(char));
+            strcat(strcpy(res, varD), " = 0\n");   
+            fputs(res, fichier_resultat);
+        }
     }
     else {
         variable *res = rechercher_variable(varD);
         char *unbo = unbounded_int2string(res->valeur);
-        printf("%s = %s\n", res->nom, unbo);
+        if (nbr_argument == 0 || nbr_argument == 1) {
+            printf("%s = %s\n", res->nom, unbo);
+        }
+        if (nbr_argument == 2 || nbr_argument == 3) {
+            char *resultat = malloc (sizeof(char));
+            strcat(strcpy(resultat, varD), " = ");   
+            strcat(resultat, unbo); 
+            strcat(resultat, "\n");   
+            fputs(resultat, fichier_resultat);
+        }
     }
 }
 

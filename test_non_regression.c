@@ -59,7 +59,7 @@ void test_non_regression(char *prefixe, bool resultat_attendu) {
     char *lancement = malloc(sizeof(*lancement)*500);
     assert(lancement != NULL);
     sprintf(lancement, "./calc_unbounded_int -i %s -o %s", input, resultat);
-    printf(lancement);
+    //printf(lancement);
     printf("\n");
 
     int res_main;

@@ -1,2 +1,12 @@
-a = 123456789
 print a
+    print b
+c =      123456789
+    print    c
+
+
+d =     234
+
+e =     d   -    1
+print           e
+f = 1 +                               2
+print   f

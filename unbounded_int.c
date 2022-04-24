@@ -21,7 +21,9 @@ static unbounded_int *creer_unbounded_int() {
     unbounded_int* unbo = malloc(sizeof(unbounded_int));
     if(unbo == NULL) {
         perror("\ncreer_unbounded_int : La création de l'unbounded_int a échouée\n");
-        exit(1);
+        unbounded_int unbi;
+        unbi.signe = '*';
+        return &unbi;
     }
     unbo->len = 0;
     return unbo;
