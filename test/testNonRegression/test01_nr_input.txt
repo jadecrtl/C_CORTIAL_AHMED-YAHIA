@@ -1,2 +1,5 @@
 a = 1234567890
 print a
+b = 1234
+c = a - b
+print c

@@ -38,25 +38,25 @@ static FILE *ouvrir_fichier_en_lecture(char *nom_fichier) {
 }
 
 void test_non_regression(char *prefixe, bool resultat_attendu) {
-    char *input = malloc(sizeof(*input)*50);
+    char *input = malloc(sizeof(*input)*5000);
     assert(input != NULL);
     sprintf(input, "%s_input.txt", prefixe);
     //printf(input);
     //printf("\n");
 
-    char *resultat = malloc(sizeof(*resultat)*50);
+    char *resultat = malloc(sizeof(*resultat)*5000);
     assert(resultat != NULL);
     sprintf(resultat, "%s_resultat.txt", prefixe);
     //printf(resultat);
     //printf("\n");
 
-    char *modele = malloc(sizeof(*modele)*50);
+    char *modele = malloc(sizeof(*modele)*5000);
     assert(modele != NULL);
     sprintf(modele, "%s_modele.txt", prefixe);
     //printf(modele);
     //printf("\n");
     
-    char *lancement = malloc(sizeof(*lancement)*500);
+    char *lancement = malloc(sizeof(*lancement)*5000000);
     assert(lancement != NULL);
     sprintf(lancement, "./calc_unbounded_int -i %s -o %s", input, resultat);
     //printf(lancement);
@@ -90,6 +90,9 @@ void compare_fichier(char *resultat, char *modele, bool resultat_attendu) {
     }
     fclose(fichier_resultat);
     fclose(fichier_modele);
-    assert(resultat_attendu == resultat_compare);
+    if(resultat_attendu != resultat_compare) {
+        perror("Les fichiers ne sont pas identiques");
+        exit(1);
+    }
     printf("Les fichiers <%s> et <%s> sont identiques\n", resultat, modele);
 }

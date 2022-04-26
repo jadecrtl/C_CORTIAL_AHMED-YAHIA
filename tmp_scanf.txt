@@ -1,6 +1,0 @@
-print a
-print b
-c = 123
-print c
-c = c + 6
-print c
