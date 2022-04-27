@@ -78,6 +78,10 @@ void compare_fichier(char *resultat, char *modele, bool resultat_attendu) {
     while(true) {
         r = fgetc(fichier_resultat);
         m = fgetc(fichier_modele);
+        printf("%c, %c\n",r,m);
+        if(r == '\n' && m == EOF){
+            continue;
+        }
         if (r == EOF && m == EOF) {
             break;
         }
