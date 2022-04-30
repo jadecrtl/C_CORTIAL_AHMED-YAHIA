@@ -347,6 +347,7 @@ static void interprete_ligne(char *char_ligne, int nbr_argument){
             SINON c'est une variable
                 fonction qui gère les variables
     */
+    printf("%s\n",char_ligne);
     char *varG = malloc(sizeof(char));//Partie de la ligne qui contient soit print soit une variable
     if(varG == NULL){
         perror("malloc error !\n");
@@ -424,6 +425,7 @@ static void print_variable(char *char_ligne, int nbr_argument) {
     else {
         variable *res = rechercher_variable(varD);
         char *unbo = unbounded_int2string(res->valeur);
+        printf("%s = %s\n",res->nom,unbo);
         if (nbr_argument == 0 || nbr_argument == 1) {
             printf("%s = %s\n", res->nom, unbo);
         }
@@ -517,12 +519,13 @@ static void variable_operation(int operation, char *varG, char *varD, char *char
         return;
     }
     while (*char_ligne != '\0' && *char_ligne != '\n') {
+        printf("%s\n",pointeur);
         if (*char_ligne == ' ') {
             char_ligne++;
             cpt_espace++;
             continue;
         }
-        if(strlen(pointeur) > 0 && cpt_espace > 0){
+        if(strlen(pointeur) > 0 && cpt_espace == 0){
             //printf("Entier ou variable mal indenté !\n");
             return;
         }
@@ -597,6 +600,7 @@ static void variable_operation(int operation, char *varG, char *varD, char *char
             }
     }
     if(unbo1.signe == '*' && unbo2.signe != '*'){
+        //printf("ok\n");
         variable *tmp1 = rechercher_variable(varD);
         if (tmp1 == NULL) {
             //printf("ERREUR : la variable n'existe pas");

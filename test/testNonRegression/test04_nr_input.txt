@@ -1,4 +1,4 @@
-a = 1234567890
+a = -1234567890
 b = 987654321
 print b
 
@@ -8,10 +8,10 @@ print c
 
 d = 1
 print d
-d = d + 2
+d = d + -2
 print d
 
 print a
-a = a + 23
+a = a - 23
 
 print a
