@@ -40,8 +40,8 @@ static void variable_operation(int operation, char *varG, char *varD, char *char
 
 
 static void test_afficher_variables();
-static void test_ajout_variable(char *nom, char *charUnbo, char *nomAttendu, char *charUnboAttendu);
-static void test_recherche_variable(char *nom_attendu, char *char_unbo_attendu, bool resultat_recherche_attendu);
+//static void test_ajout_variable(char *nom, char *charUnbo, char *nomAttendu, char *charUnboAttendu);
+//static void test_recherche_variable(char *nom_attendu, char *char_unbo_attendu, bool resultat_recherche_attendu);
 
 liste_variable *variables;
 
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
 
 void recupere_argument(int argc, char *argv[]) {
     for (int i = 0; i < argc; i++) {
-        printf("argv[%d] = %s \n", i, argv[i]);
+        //printf("argv[%d] = %s \n", i, argv[i]);
     }
     if (argc == 1) {
         interprete_fichier(0);
@@ -108,14 +108,14 @@ void recupere_argument(int argc, char *argv[]) {
     if (argc == 3) {
         if (strcmp(argv[1], "-i") == 0) {
             //fichier_to_stdout(fichier_source); à développer plus tard
-            printf("fichier source = %s\n", argv[2]);
+            //printf("fichier source = %s\n", argv[2]);
             fichier_source = ouvrir_fichier_en_lecture(argv[2]);
             interprete_fichier(1);
             return;
         }
         if (strcmp(argv[1], "-o") == 0) {
             //stdin_to_fichier(fichier_resultat); à développer plus tard
-            printf("fichier resultat = %s\n", argv[2]);
+            //printf("fichier resultat = %s\n", argv[2]);
             fichier_resultat = ouvrir_fichier_en_ecriture(argv[2]);
             interprete_fichier(2);
             return;
@@ -123,33 +123,33 @@ void recupere_argument(int argc, char *argv[]) {
     }
     if (argc == 5) {
         if (strcmp(argv[1], "-i") == 0 && strcmp(argv[3], "-o") == 0) {
-            printf("fichier source = %s\n", argv[2]);
+            //printf("fichier source = %s\n", argv[2]);
             fichier_source = ouvrir_fichier_en_lecture(argv[2]);
-            printf("fichier resultat = %s\n", argv[4]);
+            //printf("fichier resultat = %s\n", argv[4]);
             fichier_resultat = ouvrir_fichier_en_ecriture(argv[4]);
             interprete_fichier(3);
             return;
         }
         if (strcmp(argv[1], "-o") == 0 && strcmp(argv[3], "-i") == 0) {
-            printf("fichier source = %s\n", argv[4]);
+            //printf("fichier source = %s\n", argv[4]);
             fichier_source = ouvrir_fichier_en_lecture(argv[4]);
-            printf("fichier resultat = %s\n", argv[2]);
+            //printf("fichier resultat = %s\n", argv[2]);
             fichier_resultat = ouvrir_fichier_en_ecriture(argv[2]);
             interprete_fichier(3);
             return;
         }
     }
-    printf("***** KO ***** LES ARGUMENTS SONT INCORRECTS, faire ./calc_unbounded_int -i source -o resultat\n");
+    //printf("***** KO ***** LES ARGUMENTS SONT INCORRECTS, faire ./calc_unbounded_int -i source -o resultat\n");
     exit(1);    
 }
 
 static FILE *ouvrir_fichier_en_lecture(char *nom_fichier) {
     FILE *fichier = fopen(nom_fichier, "r");
     if (fichier != NULL) {
-        printf("%s ouvert en lecture\n", nom_fichier);
+        //printf("%s ouvert en lecture\n", nom_fichier);
     }
     else {
-        printf("impossible d'ouvrir <%s> en lecture\n", nom_fichier);
+        //printf("impossible d'ouvrir <%s> en lecture\n", nom_fichier);
         exit(1);
     }
     return fichier;
@@ -158,7 +158,7 @@ static FILE *ouvrir_fichier_en_lecture(char *nom_fichier) {
 static FILE *ouvrir_fichier_en_ecriture(char *nom_fichier) {
     FILE *fichier = fopen(nom_fichier, "w");
     if (fichier != NULL) {
-        printf("%s ouvert en écriture\n", nom_fichier);//IMPOSSIBLE SI ON A PAS LES DROITS D'ECRITURE
+        //printf("%s ouvert en écriture\n", nom_fichier);//IMPOSSIBLE SI ON A PAS LES DROITS D'ECRITURE
     }//POSSIBLE DE L'OUVRIR EN ECRITURE MEME SI ON ECRIT ACTUELLEMENT DEDANS
     return fichier;
 }
@@ -175,12 +175,12 @@ static variable *creer_variable() {
 void ajouter_variable(char *nomVar, unbounded_int unbo) {
     char *i = nomVar;
     if(compare_chaine(i) == 0){
-        printf("Le nom de <%s> ne doit pas contenir de print\n", nomVar);
+        //printf("Le nom de <%s> ne doit pas contenir de print\n", nomVar);
         exit(1);
     }
     while (*i != '\0') {
         if (isdigit(*i)){
-            printf("Le nom de <%s> ne doit pas contenir de chiffre\n", nomVar);
+            //printf("Le nom de <%s> ne doit pas contenir de chiffre\n", nomVar);
             exit(1);
         }
         i++;
@@ -197,7 +197,7 @@ void ajouter_variable(char *nomVar, unbounded_int unbo) {
         variables->dernier = var;
     }
     var->suivant = NULL;
-    printf("variable <%s> ajoutée (%s)\n", nomVar, unbounded_int2string(unbo));
+    //printf("variable <%s> ajoutée (%s)\n", nomVar, unbounded_int2string(unbo));
 }
 
 static int compare_chaine(char *nomVar) {
@@ -237,8 +237,8 @@ variable *rechercher_variable(char *nom_variable) {
         }
         tmp = tmp->suivant;
     }
-    printf("**** ERREUR **** : la variable <%s> n'existe pas.\n", nom_variable);
-    return NULL;//FAIRE ATTENTION
+    //printf("**** ERREUR **** : la variable <%s> n'existe pas.\n", nom_variable);
+    return NULL;
 }
 
 static void test_afficher_variables() {
@@ -247,18 +247,18 @@ static void test_afficher_variables() {
     int i = 0;
     while(tmp != NULL) {
         i++;
-        printf("%d : [%s = %s]\n", i, tmp->nom, unbounded_int2string(tmp->valeur));
+        //printf("%d : [%s = %s]\n", i, tmp->nom, unbounded_int2string(tmp->valeur));
         tmp = tmp->suivant;
     }
 }
 
-static void test_ajout_variable(char *nom, char *charUnbo, char *nomAttendu, char *charUnboAttendu) {
+/*static void test_ajout_variable(char *nom, char *charUnbo, char *nomAttendu, char *charUnboAttendu) {
     unbounded_int ubi = string2unbounded_int(charUnbo);
     ajouter_variable(nom, ubi);
-    printf("OK test_ajout_variable : %s = %s\n", nom, charUnbo);
-}
+    //printf("OK test_ajout_variable : %s = %s\n", nom, charUnbo);
+}*/
 
-static void test_recherche_variable(char *nom_attendu, char *char_unbo_attendu, bool resultat_recherche_attendu) {
+/*static void test_recherche_variable(char *nom_attendu, char *char_unbo_attendu, bool resultat_recherche_attendu) {
     variable *varRecherchee = rechercher_variable(nom_attendu);
     bool resultat_recherche = true;
     if (varRecherchee == NULL) {
@@ -280,7 +280,7 @@ static void test_recherche_variable(char *nom_attendu, char *char_unbo_attendu, 
         //printf("**** KO **** test_recherche_variable : %s = %s\n", nom_attendu, char_unbo_attendu);
         exit(1);
     }
-}
+}*/
 
 void interprete_fichier(int nbr_argument){
     char *stock_ligne = malloc(sizeof(char));
@@ -370,11 +370,11 @@ static void interprete_ligne(char *char_ligne, int nbr_argument){
     *varG = '\0';
     varG = tmp;//Permet de pointer sur le premier caractère de varG pour l'avoir en entier    
     if (strlen(char_ligne) == 0 && strlen(varG) != 0) {
-        printf("On ne peut pas écrire une variable seule!!!\n");
+        //printf("On ne peut pas écrire une variable seule!!!\n");
         return;
     }
     if (strlen(char_ligne) == 0 && strlen(varG) == 0) {
-        printf("ligne vide\n");
+        //printf("ligne vide\n");
     }
     char_ligne++;
     variable_assignation_ou_operations(char_ligne, varG);
@@ -394,7 +394,7 @@ static void print_variable(char *char_ligne, int nbr_argument) {
             continue;
         }
         if (*char_ligne == '=' || *char_ligne == '*' || *char_ligne == '+' || *char_ligne == '-') {
-            printf("ERREUR pas d'assignation ou d'opérations avec print!!!!\n");
+            //printf("ERREUR pas d'assignation ou d'opérations avec print!!!!\n");
             return;
         }
         *varD = *char_ligne;
@@ -404,11 +404,11 @@ static void print_variable(char *char_ligne, int nbr_argument) {
     *varD = '\0';
     varD = tmp;
     if (compare_chaine(tmp) == 0) {
-        printf("La variable <%s> n'a pas le droit de contenir print\n", varD);
+        //printf("La variable <%s> n'a pas le droit de contenir print\n", varD);
         return;
     }
     if (strlen(varD) == 0) {
-        printf("Il n'y a pas de variable!\n");
+        //printf("Il n'y a pas de variable!\n");
         return;
     }
     if (rechercher_variable(varD) == NULL) {
@@ -475,7 +475,7 @@ static void variable_assignation_ou_operations(char *char_ligne, char *varG) {
                 variable_operation(3,varG,pointeur,char_ligne);
                 return;
             }
-            printf("Entier ou variable mal indenté !\n");
+            //printf("Entier ou variable mal indenté !\n");
             return;
         }
         *varD = *char_ligne;
@@ -490,7 +490,7 @@ static void variable_assignation_ou_operations(char *char_ligne, char *varG) {
     if(unbo.signe == '*'){
         variable *tmp = rechercher_variable(varD);
         if (tmp == NULL || i == 1) {
-            printf("ERREUR : la variable n'existe pas");
+            //printf("ERREUR : la variable n'existe pas");
             return;
         } else {
             var->valeur = tmp->valeur;
@@ -513,7 +513,7 @@ static void variable_operation(int operation, char *varG, char *varD, char *char
     }
     char *pointeur = op;
     if(*char_ligne != ' '){
-        printf("Mauvaise indentation d'operation !\n");
+        //printf("Mauvaise indentation d'operation !\n");
         return;
     }
     while (*char_ligne != '\0' && *char_ligne != '\n') {
@@ -523,7 +523,7 @@ static void variable_operation(int operation, char *varG, char *varD, char *char
             continue;
         }
         if(strlen(pointeur) > 0 && cpt_espace > 0){
-            printf("Entier ou variable mal indenté !\n");
+            //printf("Entier ou variable mal indenté !\n");
             return;
         }
         *op = *char_ligne;
@@ -533,7 +533,7 @@ static void variable_operation(int operation, char *varG, char *varD, char *char
     *op = '\0';
     op = pointeur;
     if(strlen(op) == 0){
-        printf("Opération impossible !\n");
+        //printf("Opération impossible !\n");
         return;
     }
     variable *var = rechercher_variable(varG);
@@ -543,7 +543,7 @@ static void variable_operation(int operation, char *varG, char *varD, char *char
         variable *tmp1 = rechercher_variable(varD);
         variable *tmp2 = rechercher_variable(op);
         if (tmp1 == NULL || tmp2 == NULL) {
-            printf("ERREUR : la variable n'existe pas");
+            //printf("ERREUR : la variable n'existe pas");
             return;
         } else {
             switch (operation){
@@ -599,7 +599,7 @@ static void variable_operation(int operation, char *varG, char *varD, char *char
     if(unbo1.signe == '*' && unbo2.signe != '*'){
         variable *tmp1 = rechercher_variable(varD);
         if (tmp1 == NULL) {
-            printf("ERREUR : la variable n'existe pas");
+            //printf("ERREUR : la variable n'existe pas");
             return;
         } else {
             switch (operation){
@@ -630,7 +630,7 @@ static void variable_operation(int operation, char *varG, char *varD, char *char
     if(unbo1.signe != '*' && unbo2.signe == '*'){
         variable *tmp2 = rechercher_variable(op);
         if (tmp2 == NULL) {
-            printf("ERREUR : la variable n'existe pas");
+            //printf("ERREUR : la variable n'existe pas");
             return;
         } else {
             switch (operation){

@@ -1,0 +1,17 @@
+a = 1234567890
+b = 987654321
+print b
+
+c = b - a
+
+print c
+
+d = 1
+print d
+d = d + 2
+print d
+
+print a
+a = a + 23
+
+print a

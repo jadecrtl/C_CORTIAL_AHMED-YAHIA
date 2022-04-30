@@ -14,8 +14,9 @@ int main() {
     printf("****************************************************\n");
 
     test_non_regression("test/testNonRegression/test01_nr", true);
-
-
+    test_non_regression("test/testNonRegression/test02_nr", true);
+    test_non_regression("test/testNonRegression/test03_nr", true);
+    test_non_regression("test/testNonRegression/test04_nr", true);
 
 
     printf("*******************************************\n");
@@ -78,7 +79,6 @@ void compare_fichier(char *resultat, char *modele, bool resultat_attendu) {
     while(true) {
         r = fgetc(fichier_resultat);
         m = fgetc(fichier_modele);
-        printf("%c, %c\n",r,m);
         if(r == '\n' && m == EOF){
             continue;
         }

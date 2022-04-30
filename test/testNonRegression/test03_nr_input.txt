@@ -1,0 +1,10 @@
+a = 10000
+b = 500
+a = a * a
+
+print a
+
+
+c = 7000
+d = b * c
+print d

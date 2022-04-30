@@ -41,7 +41,7 @@ static chiffre *creer_chiffre() {
 static void ajouter_chiffre_a_la_fin(const char e, unbounded_int *unbo) {
     if (!isdigit(e)) {
         unbo->signe = '*';
-        printf("\najouter_chiffre_a_la_fin : Cette chaîne contient un non numérique.\n");
+        //printf("\najouter_chiffre_a_la_fin : Cette chaîne contient un non numérique.\n");
     }
     chiffre *chi = creer_chiffre();
     chi->c = e;
@@ -456,7 +456,7 @@ unbounded_int unbounded_int_produit( unbounded_int a, unbounded_int b) {
 
             r = v / 10;
 
-            printf("c = %c\n",c->c);
+            //printf("c = %c\n",c->c);
         
             if (c->precedent != NULL){
                 c = c->precedent;
