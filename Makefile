@@ -33,6 +33,4 @@ test_non_regression: test_non_regression.o
 
 clean :
 	rm -f *.o
-	rm -f test_unbounded
-	rm -f calc_unbounded_int
-	rm -f test_non_regression
+	rm -f $(EXEC)
