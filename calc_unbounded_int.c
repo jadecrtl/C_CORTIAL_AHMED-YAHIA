@@ -92,8 +92,11 @@ int main(int argc, char *argv[]) {
     printf("**********TEST OK **********\n");
     printf("****************************\n");
 
-    //fclose(fichier_source);//petit soucis "double free or corruption (!prev)"
-    //fclose(fichier_resultat);//s'il n'existe pas on ne peut pas le close
+    int fclose_resultat = fclose(fichier_resultat);//s'il n'existe pas on ne peut pas le close
+    if (fclose_resultat == EOF) {
+        perror("Erreur de fermeture fichier");
+        exit(1);
+    }
     return 0;
 }
 
@@ -102,6 +105,8 @@ void recupere_argument(int argc, char *argv[]) {
         //printf("argv[%d] = %s \n", i, argv[i]);
     }
     if (argc == 1) {
+        fichier_source = stdin;
+        fichier_resultat = stdout;
         interprete_fichier(0);
         return;
     }
@@ -110,6 +115,7 @@ void recupere_argument(int argc, char *argv[]) {
             //fichier_to_stdout(fichier_source); à développer plus tard
             //printf("fichier source = %s\n", argv[2]);
             fichier_source = ouvrir_fichier_en_lecture(argv[2]);
+            fichier_resultat = stdout;
             interprete_fichier(1);
             return;
         }
@@ -117,6 +123,7 @@ void recupere_argument(int argc, char *argv[]) {
             //stdin_to_fichier(fichier_resultat); à développer plus tard
             //printf("fichier resultat = %s\n", argv[2]);
             fichier_resultat = ouvrir_fichier_en_ecriture(argv[2]);
+            fichier_source = stdin;
             interprete_fichier(2);
             return;
         }
