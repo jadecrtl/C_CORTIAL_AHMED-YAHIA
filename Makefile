@@ -1,7 +1,7 @@
 #url du lien web pour faire des makefile : https://gl.developpez.com/tutoriel/outil/makefile/
 COMPILATEUR=gcc
 CFLAGS=-Wall -g -pedantic
-EXEC=test_unbounded calc_unbounded_int test_non_regression
+EXEC=test_unbounded calc_unbounded_int 
 
 # $@ Le nom de la cible
 # $< Le nom de la première dépendance
@@ -23,9 +23,6 @@ calc_unbounded_int: calc_unbounded_int.o unbounded_int.o
 	$(COMPILATEUR) -o $@ $^
 
 test_unbounded: unbounded_int.o test_unbounded.o
-	$(COMPILATEUR) -o $@ $^
-
-test_non_regression: test_non_regression.o
 	$(COMPILATEUR) -o $@ $^
 
 %.o: %.c
