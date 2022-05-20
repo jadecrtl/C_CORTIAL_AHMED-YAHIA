@@ -137,7 +137,7 @@ unbounded_int string2unbounded_int(const char *e) {
 
 /*Prend un long long et renvoie le unbounded_int correspondant.*/
 unbounded_int ll2unbounded_int(long long i) {
-    int j = i;
+    long long j = i;
     unbounded_int unbo = creer_unbounded_int();
     if (i < 0) {
         unbo.signe = '-';
@@ -152,7 +152,6 @@ unbounded_int ll2unbounded_int(long long i) {
         j = j / 10;
         unbo.len++;
     }
-    printf("su2\n");
     return unbo;
 }
 

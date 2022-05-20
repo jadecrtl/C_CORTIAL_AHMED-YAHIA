@@ -7,7 +7,7 @@
 void affiche(unbounded_int unbo);
 void afficheUnboPasPointeur(unbounded_int unbo);
 void test_string2unbounded_int(const char *e, const char signe_voulu, const size_t len_voulu);
-void test_ll2unbounded_int(long long test);
+void test_ll2unbounded_int(long long test, const char *resultat_attendu);
 void test_unbounded_int2string(const char *c);
 void test_unbounded_int_cmp_unbounded_int(const char *test_a, const char *test_b, const int resultat_voulu);
 void test_unbounded_int_cmp_ll(const char *test_a, long long test_b, const int resultat_voulu);
@@ -29,8 +29,9 @@ int main(void) {
     test_string2unbounded_int("-1234a", '*', 5);
 
     printf("\n\nTest ll2unbounded_int : \n\n");
-    test_ll2unbounded_int(123456789);
-    test_ll2unbounded_int(-123456789);
+    test_ll2unbounded_int(123456789, "123456789");
+    test_ll2unbounded_int(-123456789, "-123456789");
+    test_ll2unbounded_int(1234567898765432, "1234567898765432");
 
     printf("\n\nTest unbounded_int2string : \n\n");
     test_unbounded_int2string("5230");
@@ -118,16 +119,11 @@ int main(void) {
 }
 
 void affiche(unbounded_int unbo) {
-    //printf("Voici le signe de unbounded_int : %c\n", unbo->signe);
-    //printf("Voici la taille de unbounded_int : %ld\n", unbo->len);
-    //printf("Voici le premier chiffre de unbounded_int : %c\n", unbo->premier->c);
-    //printf("Voici le dernier chiffre de unbounded_int : %c\n\n", unbo->dernier->c);
     chiffre *chi = malloc(sizeof(chiffre));
     if(chi == NULL) {
         perror("\naffiche : La création du chiffre a échouée\n");
         exit(1);
     }
-    printf("unbounded_int affichage en entier : ");
     printf("%c", unbo.signe);
     chi = unbo.premier;
     while(chi != NULL) {
@@ -156,43 +152,55 @@ void afficheUnboPasPointeur(unbounded_int unbo) {
         chi = chi->suivant;
     }
     printf("\n");
-    //free(chi);
 }
 
 void test_string2unbounded_int(const char *test, const char signe_voulu, const size_t len_voulu) {
     unbounded_int ubi = string2unbounded_int(test);
     affiche(ubi);
+    if (ubi.signe != signe_voulu) {
+        printf("\n** MAUVAIS RESULTAT ** test_string2unbounded_int\n");
+        exit(1);
+    }
+    if (*test == '-' || *test == '+') {
+        test++;
+    }
+    while (*test != '\0' && ubi.premier != NULL) {
+        if(*test != ubi.premier->c){
+            printf("\n** MAUVAIS RESULTAT ** test_string2unbounded_int\n");
+            exit(1);
+        }
+        test++;
+        ubi.premier = ubi.premier->suivant;
+    }
     printf("\nOK test_string2unbounded_int: %s, %c, %ld\n\n", test, signe_voulu, len_voulu);
-    //free(ubi);
 }
 
-void test_ll2unbounded_int(long long test) {
+void test_ll2unbounded_int(long long test, const char *resultat_attendu) {
     unbounded_int ubi = ll2unbounded_int(test);
-    //printf("Début test_ll2unbounded_int\n");
     affiche(ubi);
+    char *resultat = unbounded_int2string(ubi);
+    if (strcmp(resultat, resultat_attendu) != 0) {
+        printf("\n** PAS IDENTIQUE ** Echec du test_ll2unbounded_int: %s, %s\n", resultat, resultat_attendu);
+        exit(1);
+
+    }
     printf("\nOK test_ll2unbounded_int\n\n");
-    //free(ubi);
 }
 
 void test_unbounded_int2string(const char *resultat) {
-    unbounded_int *u = malloc(sizeof(unbounded_int));
-    if (u == NULL) {
-        perror("\ntest_unbounded_int2string : La création de l'unbounded_int a échouée\n");
-        exit(1);
-    }
-    *u = string2unbounded_int(resultat);
-    char *res = unbounded_int2string(*u);
+    unbounded_int u = string2unbounded_int(resultat);
+    char *res = unbounded_int2string(u);
     puts(res); //puts(e) écrit la chaine de caractère du tableau de char e
     puts(resultat);
     while(*res != '\0' && *resultat != '\0'){
         if(*res != *resultat){
-            printf("\n** KO ** test_string2unbounded_int\n");
+            printf("\n** MAUVAIS RESULTAT ** test_unbounded_int2string\n");
             exit(1);
         }
         res++;
         resultat++;
     }
-    printf("\nOK test_string2unbounded_int\n\n");
+    printf("\nOK test_unbounded_int2string\n\n");
 }
 
 void test_unbounded_int_cmp_unbounded_int(const char *test_a, const char *test_b, const int resultat_voulu) {
@@ -204,59 +212,56 @@ void test_unbounded_int_cmp_unbounded_int(const char *test_a, const char *test_b
 
     int resultat = unbounded_int_cmp_unbounded_int(unbo_a, unbo_b);
     if (resultat != resultat_voulu) {
-        printf("\n** KO ** Echec du test_unbounded_int_cmp_unbounded_int: %s, %s, %d\n", test_a, test_b, resultat_voulu);
-        //free(unbo_a);
-        //free(unbo_b);
+        printf("\n** PAS IDENTIQUE ** Echec du test_unbounded_int_cmp_unbounded_int: %s, %s, %d\n\n", test_a, test_b, resultat_voulu);
         exit(1);
     }
-    //printf("Resultat de la comparaison entre les 2 unbo : %d", resultat);
-    printf("OK test_unbounded_int_cmp_unbounded_int: %s, %s, %d\n", test_a, test_b, resultat_voulu);
-    //free(unbo_a);
-    //free(unbo_b);
+    if (resultat == 1) {
+        printf("OK test_unbounded_int_cmp_unbounded_int: %s > %s car resultat = %d\n\n", test_a, test_b, resultat_voulu);
+    }
+    if (resultat == 0) {
+        printf("OK test_unbounded_int_cmp_unbounded_int: %s = %s car resultat = %d\n\n", test_a, test_b, resultat_voulu);
+    }
+    if (resultat == -1) {
+        printf("OK test_unbounded_int_cmp_unbounded_int: %s < %s car resultat = %d\n\n", test_a, test_b, resultat_voulu);
+    }
 }
 
 void test_unbounded_int_cmp_ll(const char *test_a, long long test_b, const int resultat_voulu) {
-    unbounded_int *unbo_a = malloc(sizeof(unbounded_int));
-    if (unbo_a == NULL) {
-        perror("\ntest_unbounded_int_cmp_ll : La création de l'unbounded_int a échouée\n");
-        exit(1);
-    }
-    unbounded_int* unbo_b = malloc(sizeof(unbounded_int));
-    if (unbo_b == NULL) {
-        perror("\ntest_unbounded_int_cmp_ll : La création de l'unbounded_int a échouée\n");
-        exit(1);
-    }
-    *unbo_a = string2unbounded_int(test_a);
-    *unbo_b = ll2unbounded_int(test_b);
-    int resultat = unbounded_int_cmp_unbounded_int(*unbo_a, *unbo_b);
+    unbounded_int unbo_a = string2unbounded_int(test_a);
+    unbounded_int unbo_b = ll2unbounded_int(test_b);
+    int resultat = unbounded_int_cmp_unbounded_int(unbo_a, unbo_b);
     if (resultat != resultat_voulu) {
-        printf("\n** KO ** Echec du test_unbounded_int_cmp_ll: %s, %lld, %d\n", test_a, test_b, resultat_voulu);
-        //free(unbo_a);
-        //free(unbo_b);
+        printf("\n** PAS IDENTIQUE ** Echec du test_unbounded_int_cmp_ll: %s, %lld, %d\n", test_a, test_b, resultat_voulu);
         exit(1);
     }
-    //printf("Resultat de la comparaison entre les 2 unbo : %d", resultat);
-    printf("OK test_unbounded_int_cmp_ll: %s, %lld, %d\n", test_a, test_b, resultat_voulu);
-    //free(unbo_a);
-    //free(unbo_b);
+    if (resultat == 1) {
+        printf("OK test_unbounded_int_ll: %s > %lld car resultat = %d\n\n", test_a, test_b, resultat_voulu);
+    }
+    if (resultat == 0) {
+        printf("OK test_unbounded_int_ll: %s = %lld car resultat = %d\n\n", test_a, test_b, resultat_voulu);
+    }
+    if (resultat == -1) {
+        printf("OK test_unbounded_int_ll: %s < %lld car resultat = %d\n\n", test_a, test_b, resultat_voulu);
+    }
 }
 
 void test_somme_2unbounded_int_positifs(const char *test_a, const char* test_b, const char* resultat){
     unbounded_int unbo_a = string2unbounded_int(test_a);
+    printf("Premier unbounded_int : ");
     affiche(unbo_a);
 
     unbounded_int unbo_b = string2unbounded_int(test_b);
+    printf("Second unbounded_int : ");
     affiche(unbo_b);
     
     unbounded_int unbo_c = unbounded_int_somme(unbo_a,unbo_b);
+    printf("resultat de la somme : ");
     affiche(unbo_c);
-    printf("\ntaille du resultat : %ld\n",unbo_c.len);
-    printf("\nsigne du resultat : %c\n",unbo_c.signe);
 
     char* c = unbounded_int2string(unbo_c);
     while(*c != '\0' && *resultat != '\0'){
         if(*c != *resultat){
-            printf("\n** KO ** test_somme_2unbounded_int_positifs\n");
+            printf("\n** FAUX ** test_somme_2unbounded_int_positifs\n");
             exit(1);
         }
         c++;
@@ -267,20 +272,21 @@ void test_somme_2unbounded_int_positifs(const char *test_a, const char* test_b, 
 
 void test_difference_2unbounded_int_positifs(const char *test_a, const char* test_b, const char* resultat){
     unbounded_int unbo_a = string2unbounded_int(test_a);
+    printf("Premier unbounded_int : ");
     affiche(unbo_a);
 
     unbounded_int unbo_b = string2unbounded_int(test_b);
+    printf("Second unbounded_int : ");
     affiche(unbo_b);
     
     unbounded_int unbo_c = unbounded_int_difference(unbo_a,unbo_b);
+    printf("resultat de la difference : ");
     affiche(unbo_c);
-    printf("\ntaille du resultat : %ld\n",unbo_c.len);
-    printf("\nsigne du resultat : %c\n",unbo_c.signe);
 
     char* c = unbounded_int2string(unbo_c);
     while(*c != '\0' && *resultat != '\0'){
         if(*c != *resultat){
-            printf("\n** KO ** test_difference_2unbounded_int_positifs\n");
+            printf("\n** FAUX ** test_difference_2unbounded_int_positifs\n");
             exit(1);
         }
         c++;
@@ -291,20 +297,21 @@ void test_difference_2unbounded_int_positifs(const char *test_a, const char* tes
 
 void test_produit(const char *test_a, const char* test_b, const char* resultat){
     unbounded_int unbo_a = string2unbounded_int(test_a);
+    printf("Premier unbounded_int : ");
     affiche(unbo_a);
 
     unbounded_int unbo_b = string2unbounded_int(test_b);
+    printf("Second unbounded_int : ");
     affiche(unbo_b);
     
     unbounded_int unbo_c = unbounded_int_produit(unbo_a,unbo_b);
+    printf("resultat du produit : ");
     affiche(unbo_c);
-    printf("\ntaille du resultat : %ld\n",unbo_c.len);
-    printf("\nsigne du resultat : %c\n",unbo_c.signe);
 
     char* c = unbounded_int2string(unbo_c);
     while(*c != '\0' && *resultat != '\0'){
         if(*c != *resultat){
-            printf("\n** KO ** test_produit\n");
+            printf("\n** FAUX ** test_produit\n");
             exit(1);
         }
         c++;
