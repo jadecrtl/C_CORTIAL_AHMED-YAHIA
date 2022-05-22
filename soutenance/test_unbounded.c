@@ -6,8 +6,8 @@
 
 void affiche(unbounded_int unbo);
 void test_string2unbounded_int(const char *e, const char signe_voulu, const size_t len_voulu);
-void test_ll2unbounded_int(long long test, const char *resultat_attendu);
 void test_unbounded_int2string(const char *c);
+void test_ll2unbounded_int(long long test, const char *resultat_attendu);
 void test_unbounded_int_cmp_unbounded_int(const char *test_a, const char *test_b, const int resultat_voulu);
 void test_unbounded_int_cmp_ll(const char *test_a, long long test_b, const int resultat_voulu);
 void test_somme(const char *test_a, const char* test_b, const char* resultat);
@@ -27,15 +27,20 @@ int main(void) {
     test_string2unbounded_int("-12a34", '*', 5);
     test_string2unbounded_int("-1234a", '*', 5);
 
+
+    printf("\n\nTest unbounded_int2string : \n\n");
+
+    test_unbounded_int2string("5230");
+    test_unbounded_int2string("-5230");
+    test_unbounded_int2string("26a8");
+
+
     printf("\n\nTest ll2unbounded_int : \n\n");
+
     test_ll2unbounded_int(123456789, "123456789");
     test_ll2unbounded_int(-123456789, "-123456789");
     test_ll2unbounded_int(1234567898765432, "1234567898765432");
 
-    printf("\n\nTest unbounded_int2string : \n\n");
-    test_unbounded_int2string("5230");
-    test_unbounded_int2string("-5230");
-    test_unbounded_int2string("26a8");
     
 
     printf("\n\nTest unbounded_int_cmp_unbounded_int : \n\n");
@@ -154,18 +159,6 @@ void test_string2unbounded_int(const char *test, const char signe_voulu, const s
     printf("\nOK test_string2unbounded_int: %s, %c, %ld\n\n", test, signe_voulu, len_voulu);
 }
 
-void test_ll2unbounded_int(long long test, const char *resultat_attendu) {
-    unbounded_int ubi = ll2unbounded_int(test);
-    affiche(ubi);
-    char *resultat = unbounded_int2string(ubi);
-    if (strcmp(resultat, resultat_attendu) != 0) {
-        printf("\n** PAS IDENTIQUE ** Echec du test_ll2unbounded_int: %s, %s\n", resultat, resultat_attendu);
-        exit(1);
-
-    }
-    printf("\nOK test_ll2unbounded_int <%lld>\n\n",test);
-}
-
 void test_unbounded_int2string(const char *resultat) {
     unbounded_int u = string2unbounded_int(resultat);
     char *res = unbounded_int2string(u);
@@ -181,6 +174,19 @@ void test_unbounded_int2string(const char *resultat) {
     }
     printf("\nOK test_unbounded_int2string\n\n");
 }
+
+void test_ll2unbounded_int(long long test, const char *resultat_attendu) {
+    unbounded_int ubi = ll2unbounded_int(test);
+    affiche(ubi);
+    char *resultat = unbounded_int2string(ubi);
+    if (strcmp(resultat, resultat_attendu) != 0) {
+        printf("\n** PAS IDENTIQUE ** Echec du test_ll2unbounded_int: %s, %s\n", resultat, resultat_attendu);
+        exit(1);
+
+    }
+    printf("\nOK test_ll2unbounded_int <%lld>\n\n",test);
+}
+
 
 void test_unbounded_int_cmp_unbounded_int(const char *test_a, const char *test_b, const int resultat_voulu) {
     unbounded_int unbo_a = string2unbounded_int(test_a);
