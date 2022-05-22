@@ -237,6 +237,7 @@ int unbounded_int_cmp_ll(unbounded_int a, long long b) {
     return unbounded_int_cmp_unbounded_int(a, unbo_b);
 }
 
+/*Fonction auxiliaire pour additionner 2 unbounded_int positif.*/
 static unbounded_int somme_2unbounded_int_positifs(unbounded_int u1, unbounded_int u2){
     unbounded_int u3 = creer_unbounded_int();
     if(u1.signe == '-' && u2.signe == '-'){
@@ -246,24 +247,24 @@ static unbounded_int somme_2unbounded_int_positifs(unbounded_int u1, unbounded_i
     }
     int retenue = 0;
     while(u1.dernier != NULL || u2.dernier != NULL){
-        if(u1.len > u2.len){
-            if(u1.dernier != NULL){
+        if(u1.len > u2.len){ // u1 est plus long que u2
+            if(u1.dernier != NULL){ 
                 int addition = 0;
-                if(u2.dernier != NULL){
+                if(u2.dernier != NULL){ // si u2 different de NULL alors on additionne en partant de la fin caractere par caractere u1 et u2 avec la retenue
                     addition = ((u1.dernier->c - '0')+(u2.dernier->c - '0') + retenue)%10;
                     retenue = ((u1.dernier->c - '0')+(u2.dernier->c - '0') + retenue)/10;
                     u3 = ajouter_chiffre_au_debut((char)addition+'0',u3);
                     u2.dernier = u2.dernier->precedent;
                     u3.len++;
-                } else {
+                } else { // sinon on ajoute u1 avec la retenue
                     addition = ((u1.dernier->c - '0') + retenue)%10;
                     retenue = ((u1.dernier->c - '0') + retenue)/10;
                     u3 = ajouter_chiffre_au_debut((char)addition+'0',u3);
                     u3.len++;
                 }
-                u1.dernier = u1.dernier->precedent;
+                u1.dernier = u1.dernier->precedent; // dans tout les cas on parcourt les caracteres de u1
             } 
-        } else{
+        } else{ // même schéma qu'en haut sauf que u2 est plus long que u1
             if(u2.dernier != NULL){
                 int addition = 0;
                 if(u1.dernier != NULL){
@@ -282,13 +283,14 @@ static unbounded_int somme_2unbounded_int_positifs(unbounded_int u1, unbounded_i
             } 
         }      
     }
-    if(retenue != 0){
+    if(retenue != 0){ // on a parcouru les 2 unbounded_int en entier mais la retenue est differente de 0 donc on l'ajoute au debut
         u3 = ajouter_chiffre_au_debut((char)retenue+'0',u3);
         u3.len++;
     }
     return u3;
 }
 
+/*Fonction auxiliaire pour soustraire 2 unbounded_int positifs a et b tels que a >= b*/
 static unbounded_int difference_2unbounded_int_positifs(unbounded_int u1, unbounded_int u2){
     unbounded_int u3 = creer_unbounded_int();
     int estNegatif = 0;
@@ -300,56 +302,67 @@ static unbounded_int difference_2unbounded_int_positifs(unbounded_int u1, unboun
     }
     int retenue = 0;
     while(u1.dernier != NULL || u2.dernier != NULL){
-        if(estNegatif == 0){
+        if(estNegatif == 0){ // u1 est plus long ou egal à u2
             if(u1.dernier != NULL){
-                int addition = 0;
+                int soustraction = 0;
                 if(u2.dernier != NULL){
-                    addition = (u1.dernier->c - '0')-(u2.dernier->c - '0') + retenue;
-                    if(addition < 0){
-                        addition += 10;
+                    soustraction = (u1.dernier->c - '0')-(u2.dernier->c - '0') + retenue;
+                    if(soustraction < 0){
+                        /* exemple :
+                            1 2
+                          -   9
+                          ------
+
+                          On fait d'abord 2 - 9 + retenue = -7
+                          Puis on ajoute 10 + (-7) = 3
+                          et on met la retenue a -1
+                          Donc on aura après 1 + (-1) donc le resultat est 03
+                          On appelle nettoyer_unbounded_int pour enlever les 0 au debut du chiffre qui sont inutiles
+                        */
+                        soustraction += 10;
                         retenue = -1;
                     } else {
                         retenue = 0;
                     }
-                    u3 = ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u3 = ajouter_chiffre_au_debut((char)soustraction+'0',u3);
                     u2.dernier = u2.dernier->precedent;
                     u3.len++;
                 } else {
-                    addition = (u1.dernier->c - '0') + retenue;
-                    if(addition < 0){
-                        addition += 10;
+                    soustraction = (u1.dernier->c - '0') + retenue;
+                    if(soustraction < 0){
+                        soustraction += 10;
                         retenue = -1;
                     } else {
                         retenue = 0;
                     }
-                    u3 = ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u3 = ajouter_chiffre_au_debut((char)soustraction+'0',u3);
                     u3.len++;
                 }
             u1.dernier = u1.dernier->precedent;
             }
-        } else {
+        } else { // u2 est plus long que u1
             if(u2.dernier != NULL){
-                int addition = 0;
+                int soustraction = 0;
                 if(u1.dernier != NULL){
-                    addition = (u2.dernier->c - '0')-(u1.dernier->c - '0') + retenue;
-                    if(addition < 0){
-                        addition += 10;
+                    soustraction = (u2.dernier->c - '0')-(u1.dernier->c - '0') + retenue;
+                    if(soustraction < 0){
+                        soustraction += 10;
                         retenue = -1;
                     } else {
                         retenue = 0;
                     }
-                    u3 = ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u3 = ajouter_chiffre_au_debut((char)soustraction+'0',u3);
                     u1.dernier = u1.dernier->precedent;
                     u3.len++;
                 } else {
-                    addition = (u2.dernier->c - '0') + retenue;
-                    if(addition < 0){
-                        addition += 10;
+                    soustraction = (u2.dernier->c - '0') + retenue;
+                    if(soustraction < 0){
+                        soustraction += 10;
                         retenue = -1;
                     } else {
                         retenue = 0;
                     }
-                    u3 = ajouter_chiffre_au_debut((char)addition+'0',u3);
+                    u3 = ajouter_chiffre_au_debut((char)soustraction+'0',u3);
                     u3.len++;
                 }
                 u2.dernier = u2.dernier->precedent;
@@ -409,7 +422,6 @@ static void modifier_chiffre(int v, chiffre *c){
 /*Renvoie le produit de a et b en unbounded_int.*/
 unbounded_int unbounded_int_produit( unbounded_int a, unbounded_int b) {
     /*ALGORITHME
-
     
     u1 = 1234
     u2 = 56
@@ -422,14 +434,11 @@ unbounded_int unbounded_int_produit( unbounded_int a, unbounded_int b) {
       ------
         7104
 
-    
-
-
     */
     int cpt = 0;
     unbounded_int u = creer_unbounded_int();
     u.len = a.len+b.len-1;
-    for(int i = 0; i < u.len; i++){
+    for(int initAZero = 0; initAZero < u.len; initAZero++){
         u = ajouter_chiffre_au_debut('0',u);
     }
     chiffre* c = u.dernier;
@@ -444,26 +453,24 @@ unbounded_int unbounded_int_produit( unbounded_int a, unbounded_int b) {
            cpt++;
            continue;
         }
-        for(int i = 0; i < cpt; i++){
+        for(int decalage = 0; decalage < cpt; decalage++){
             c = c->precedent;
         }
         for (chiffre* i = a.dernier; i != NULL; i = i->precedent){ /* boucle sur les chiffres de a*/
-            int v = (c->c - '0')+((i->c) - '0') * ((j->c) - '0') + r;
+            int v = (c->c - '0')+((i->c) - '0') * ((j->c) - '0') + r; //On fait le produit de i * j + la retenue + le caractère initialisé du début (les 0 contenus dans u)
 
             modifier_chiffre(v % 10, c);
 
             r = v / 10;
 
-            //printf("c = %c\n",c->c);
-        
             if (c->precedent != NULL){
                 c = c->precedent;
             }
         }
-        if(r != 0 && j->precedent != NULL){
+        if(r != 0 && j->precedent != NULL){ // si la retenue est differente de 0 et qu'il y a encore des 0 qui sont initialisés au départ dans u
             modifier_chiffre(r,c);
         }
-        if(r != 0 && j->precedent == NULL){
+        if(r != 0 && j->precedent == NULL){ // si la retenue est differente de 0 et qu'il y a plus de caractères de libre dans u 
             u = ajouter_chiffre_au_debut((char)r+'0',u);
             u.len++;
         }

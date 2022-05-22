@@ -5,7 +5,6 @@
 #include "unbounded_int.h"
 
 void affiche(unbounded_int unbo);
-void afficheUnboPasPointeur(unbounded_int unbo);
 void test_string2unbounded_int(const char *e, const char signe_voulu, const size_t len_voulu);
 void test_ll2unbounded_int(long long test, const char *resultat_attendu);
 void test_unbounded_int2string(const char *c);
@@ -132,26 +131,6 @@ void affiche(unbounded_int unbo) {
     }
     printf("\n");
     free(chi);
-}
-
-void afficheUnboPasPointeur(unbounded_int unbo) {
-    printf("Voici le signe de unbounded_int : %c\n", unbo.signe);
-    printf("Voici la taille de unbounded_int : %ld\n", unbo.len);
-    printf("Voici le premier chiffre de unbounded_int : %c\n", unbo.premier->c);
-    printf("Voici le dernier chiffre de unbounded_int : %c\n\n", unbo.dernier->c);
-    chiffre *chi = malloc(sizeof(chiffre));
-    if(chi == NULL) {
-        perror("\naffiche : La création du chiffre a échouée\n");
-        exit(1);
-    }
-    printf("unbounded_int affichage en entier : ");
-    printf("%c", unbo.signe);
-    chi = unbo.premier;
-    while(chi != NULL) {
-        printf("%c", chi->c);
-        chi = chi->suivant;
-    }
-    printf("\n");
 }
 
 void test_string2unbounded_int(const char *test, const char signe_voulu, const size_t len_voulu) {
