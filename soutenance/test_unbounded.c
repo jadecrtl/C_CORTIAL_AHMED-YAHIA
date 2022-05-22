@@ -213,8 +213,7 @@ void test_unbounded_int_cmp_unbounded_int(const char *test_a, const char *test_b
 
 void test_unbounded_int_cmp_ll(const char *test_a, long long test_b, const int resultat_voulu) {
     unbounded_int unbo_a = string2unbounded_int(test_a);
-    unbounded_int unbo_b = ll2unbounded_int(test_b);
-    int resultat = unbounded_int_cmp_unbounded_int(unbo_a, unbo_b);
+    int resultat = unbounded_int_cmp_ll(unbo_a, test_b);
     if (resultat != resultat_voulu) {
         printf("\n** PAS IDENTIQUE ** Echec du test_unbounded_int_cmp_ll: %s, %lld, %d\n", test_a, test_b, resultat_voulu);
         exit(1);
